@@ -1,0 +1,8 @@
+{
+  "name": "pixeltronic-ionic",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite",
+  "id": "82a549c7"
+}
