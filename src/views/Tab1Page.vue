@@ -1,11 +1,16 @@
 <template>
   <ion-page>
-    <ion-content>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Tab 1</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content fullscreen>
       <ion-list>
         <RecycleScroller class="scroller" :items="list" :item-size="156">
           <template #default="{ item }">
             <ion-card class="card-item">
-              <img alt="Silhouette of mountains" :src="item.img" />
+              <ion-img :src="item.url" />
 
               <ion-card-header>
                 <ion-card-title>{{item.title}}</ion-card-title>
@@ -24,8 +29,9 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, onIonViewDidEnter } from '@ionic/vue';
+import {IonHeader, IonPage, IonTitle, IonImg, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonCardSubtitle, IonList, IonContent, IonToolbar, onIonViewDidEnter} from '@ionic/vue';
 import axios from 'axios';
+import {RecycleScroller} from 'vue-virtual-scroller';
 import {ref} from "vue";
 
 interface Article {
@@ -37,8 +43,9 @@ interface ArticleAttributes {
   id: number;
   title: string;
   description: string;
-  img: string;
+  image: string;
   url: string;
+  link: string;
 }
 
 const list = ref<Array<Article>>([] );

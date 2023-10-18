@@ -1,8 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router';
-import VueVirtualScroller from 'vue-virtual-scroller';
-import { RecycleScroller } from 'vue-virtual-scroller';
+import VueVirtualScroller, { RecycleScroller } from 'vue-virtual-scroller';
 
 // Call the element loader after the platform has been bootstrapped
 defineCustomElements(window);
@@ -34,9 +33,8 @@ import { defineCustomElements } from '@ionic/pwa-elements/loader';
 const app = createApp(App)
   .use(IonicVue)
   .use(router)
-  .use(VueVirtualScroller);
-
-app.component('RecycleScroller', RecycleScroller);
+  .use(VueVirtualScroller)
+  .component('RecycleScroller', RecycleScroller);
 router.isReady().then(() => {
   app.mount('#app');
 });
