@@ -1,23 +1,34 @@
 <template>
   <ion-page>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Tab 3</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">Tab 3</ion-title>
-        </ion-toolbar>
-      </ion-header>
-
-      <ExploreContainer name="Tab 3 page" />
-    </ion-content>
+    <div>
+      <div id="webview" />
+    </div>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
-import ExploreContainer from '@/components/ExploreContainer.vue';
+import {IonPage, onIonViewWillEnter, onIonViewDidEnter} from '@ionic/vue';
+import { InAppBrowser } from "pixeltronic-webview-browser/src";
+
+onIonViewWillEnter(async () => {
+    const el = document.getElementById('webview');
+    if (!el) return;
+    await InAppBrowser.openWebView({
+      url: 'https://pixeltronic.dev',
+      element: el,
+    })
+});
+
+onIonViewDidEnter(async () => {
+  await InAppBrowser.showWebView();
+});
 </script>
+
+<style scoped>
+#webview {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+}
+</style>
