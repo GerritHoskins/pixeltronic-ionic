@@ -7,22 +7,26 @@
     </ion-header>
     <ion-content fullscreen>
       <ion-list>
-        <RecycleScroller class="scroller" :items="list" :item-size="150">
-          <template #default="{ item }">
-            <ion-card class="card-item">
-              <ion-card-header>
-                <ion-thumbnail>
-                  <img :alt="item.title" :src="item.url" />
-                </ion-thumbnail>
-                <ion-card-title>{{ item.title }}</ion-card-title>
-              </ion-card-header>
-              <ion-card-content>
-                {{ item.description }}
-              </ion-card-content>
-            </ion-card>
-          </template>
-        </RecycleScroller>
+        <ion-item>
+          <ion-card class="card-item" v-for="item in list" :key="item.id">
+            <ion-card-header>
+              <ion-thumbnail>
+                <img :alt="item.title" :src="item.url" />
+              </ion-thumbnail>
+              <ion-card-title>{{ item.title }}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              {{ item.description }}
+            </ion-card-content>
+          </ion-card>
+        </ion-item>
       </ion-list>
+      <ion-infinite-scroll>
+        <ion-infinite-scroll-content
+          loading-text="Please wait..."
+          loading-spinner="bubbles"
+        ></ion-infinite-scroll-content>
+      </ion-infinite-scroll>
     </ion-content>
   </ion-page>
 </template>
@@ -33,16 +37,19 @@ import {
   IonPage,
   IonTitle,
   IonCard,
+  IonItem,
   IonCardHeader,
   IonCardTitle,
   IonCardContent,
   IonList,
   IonContent,
   IonToolbar,
+  IonThumbnail,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
   onIonViewDidEnter,
 } from '@ionic/vue';
 import axios from 'axios';
-import { RecycleScroller } from 'vue-virtual-scroller';
 import { ref } from 'vue';
 
 interface Article {
@@ -63,7 +70,7 @@ const list = ref<Array<Article>>([]);
 
 onIonViewDidEnter(async () => {
   try {
-    const { data } = await axios.get('http://localhost:1337/api/articles');
+    const { data } = await axios.get('https://pixeltronic.info/strapi/api/articles');
     list.value = data.data.map((article: Article) => ({
       ...article.attributes,
       id: article.id,
@@ -75,9 +82,6 @@ onIonViewDidEnter(async () => {
 </script>
 
 <style scoped>
-.vue-recycle-scroller__item-view {
-  margin: 0 8px;
-}
 .card-item {
   margin: 10px;
   min-height: 120px !important;

@@ -2,14 +2,12 @@ import { createApp } from 'vue';
 import { IonicVue } from '@ionic/vue';
 import App from './App.vue';
 import router from './router';
-import VueVirtualScroller, { RecycleScroller } from 'vue-virtual-scroller';
 
 // Call the element loader after the platform has been bootstrapped
 defineCustomElements(window);
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
-import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 
 /* Basic CSS for apps built with Ionic */
 import '@ionic/vue/css/normalize.css';
@@ -29,11 +27,7 @@ import './theme/variables.css';
 
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
-const app = createApp(App)
-  .use(IonicVue)
-  .use(router)
-  .use(VueVirtualScroller)
-  .component('RecycleScroller', RecycleScroller);
+const app = createApp(App).use(IonicVue).use(router);
 router.isReady().then(() => {
   app.mount('#app');
 });
