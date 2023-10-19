@@ -6,21 +6,17 @@
       </ion-toolbar>
     </ion-header>
     <ion-content fullscreen>
-      <ion-list>
-        <ion-item>
-          <ion-card class="card-item" v-for="item in list" :key="item.id">
-            <ion-card-header>
-              <ion-thumbnail>
-                <img :alt="item.title" :src="item.url" />
-              </ion-thumbnail>
-              <ion-card-title>{{ item.title }}</ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-              {{ item.description }}
-            </ion-card-content>
-          </ion-card>
-        </ion-item>
-      </ion-list>
+      <ion-card class="card-item" v-for="item in list" :key="item.id">
+        <ion-card-header>
+          <ion-thumbnail>
+            <img :alt="item.title" :src="item.url" />
+          </ion-thumbnail>
+          <ion-card-title>{{ item.title }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          {{ item.description }}
+        </ion-card-content>
+      </ion-card>
       <ion-infinite-scroll>
         <ion-infinite-scroll-content
           loading-text="Please wait..."
@@ -37,11 +33,9 @@ import {
   IonPage,
   IonTitle,
   IonCard,
-  IonItem,
   IonCardHeader,
   IonCardTitle,
   IonCardContent,
-  IonList,
   IonContent,
   IonToolbar,
   IonThumbnail,
