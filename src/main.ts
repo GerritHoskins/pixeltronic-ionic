@@ -1,12 +1,11 @@
-import { createApp } from 'vue'
-import App from './App.vue'
+import { createApp } from 'vue';
+import { IonicVue } from '@ionic/vue';
+import App from './App.vue';
 import router from './router';
 import VueVirtualScroller, { RecycleScroller } from 'vue-virtual-scroller';
 
 // Call the element loader after the platform has been bootstrapped
 defineCustomElements(window);
-
-import { IonicVue } from '@ionic/vue';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';

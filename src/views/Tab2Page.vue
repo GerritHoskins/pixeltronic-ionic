@@ -2,7 +2,7 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-title>Tab 2</ion-title>
+        <ion-title>Camera</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { camera, trash, close } from 'ionicons/icons';
+import { camera } from 'ionicons/icons';
 import {
   IonPage,
   IonHeader,
@@ -38,6 +38,6 @@ import {
   IonCol,
   IonImg,
 } from '@ionic/vue';
-import { usePhotoGallery, UserPhoto } from '@/composables/usePhotoGallery';
+import { usePhotoGallery } from '@/composables/usePhotoGallery';
 const { takePhoto, photos } = usePhotoGallery();
 </script>

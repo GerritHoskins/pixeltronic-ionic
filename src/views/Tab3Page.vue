@@ -1,22 +1,51 @@
 <template>
   <ion-page>
-    <div>
-      <div id="webview" />
-    </div>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Webview overlay</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content fullscreen>
+      <div v-if="isNative">
+        <div id="webview" />
+      </div>
+      <ion-grid v-else>
+        <ion-row class="ion-align-items-center">
+          <ion-col push="3">
+            <div>This feature is only supported for native devices.</div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import {IonPage, onIonViewWillEnter, onIonViewDidEnter} from '@ionic/vue';
-import { InAppBrowser } from "pixeltronic-webview-browser/src";
+import {
+  IonPage,
+  onIonViewWillEnter,
+  onIonViewDidEnter,
+  IonContent,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+} from '@ionic/vue';
+import { InAppBrowser } from 'pixeltronic-webview-browser';
+import { Capacitor } from '@capacitor/core';
+import { computed } from 'vue';
+
+const isNative = computed(() => Capacitor.isNativePlatform());
 
 onIonViewWillEnter(async () => {
-    const el = document.getElementById('webview');
-    if (!el) return;
-    await InAppBrowser.openWebView({
-      url: 'https://pixeltronic.dev',
-      element: el,
-    })
+  const el = document.getElementById('webview');
+  if (!el) return;
+  await InAppBrowser.openWebView({
+    url: 'https://pixeltronic.dev',
+    element: el,
+  });
 });
 
 onIonViewDidEnter(async () => {
