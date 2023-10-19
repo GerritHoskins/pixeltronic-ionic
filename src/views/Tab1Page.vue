@@ -2,22 +2,20 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-title>Strapi CMS</ion-title>
+        <ion-title>Strapi CMS & infinite scrolling</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content fullscreen>
-      <ion-card class="card-item" v-for="item in list" :key="item.id">
+    <ion-content>
+      <ion-card v-for="item in list" :key="item.id">
         <ion-card-header>
-          <ion-thumbnail>
-            <img :alt="item.title" :src="item.url" />
-          </ion-thumbnail>
           <ion-card-title>{{ item.title }}</ion-card-title>
+          <ion-img v-if="item.image.url" :alt="item.image.alternativeText" :src="item.image.url" />
         </ion-card-header>
         <ion-card-content>
           {{ item.description }}
         </ion-card-content>
       </ion-card>
-      <ion-infinite-scroll>
+      <ion-infinite-scroll @ionInfinite="ionInfinite">
         <ion-infinite-scroll-content
           loading-text="Please wait..."
           loading-spinner="bubbles"
@@ -32,57 +30,84 @@ import {
   IonHeader,
   IonPage,
   IonTitle,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardContent,
   IonContent,
   IonToolbar,
-  IonThumbnail,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
+  IonCard,
+  IonCardHeader,
+  IonImg,
+  IonCardTitle,
   onIonViewDidEnter,
+  InfiniteScrollCustomEvent,
 } from '@ionic/vue';
 import axios from 'axios';
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 
 interface Article {
   id: string | number;
-  attributes: ArticleAttributes;
-}
-
-interface ArticleAttributes {
-  id: number;
   title: string;
   description: string;
-  image: string;
-  url: string;
+  image: ImageAttributes;
   link: string;
 }
 
-const list = ref<Array<Article>>([]);
+interface ImageAttributes {
+  url: string | null;
+  alternativeText: string;
+  caption: string;
+}
 
-onIonViewDidEnter(async () => {
+interface ApiResponse {
+  id: string | number;
+  attributes: {
+    id: number;
+    title: string;
+    description: string;
+    image: {
+      data: {
+        attributes: ImageAttributes;
+      };
+    };
+    link: string;
+  };
+}
+
+const BASE_URL = 'https://pixeltronic.info/strapi';
+
+const list = reactive([] as Article[]);
+
+onIonViewDidEnter(async () => getArticles());
+
+const getArticles = async () => {
   try {
-    const { data } = await axios.get('https://pixeltronic.info/strapi/api/articles');
-    list.value = data.data.map((article: Article) => ({
-      ...article.attributes,
-      id: article.id,
-    }));
-  } catch (error) {
-    console.log(error);
-  }
-});
-</script>
+    const response = await axios.get<ApiResponse[]>(
+      `${BASE_URL}/api/articles?populate=*&pagination[page]=1&pagination[pageSize]=5`
+    );
+    const articles = response.data?.data;
 
-<style scoped>
-.card-item {
-  margin: 10px;
-  min-height: 120px !important;
-}
-ion-thumbnail {
-  --size: 40px;
-  --border-radius: 0;
-}
-</style>
-```
+    articles.map(({ id, attributes }) => {
+      const { title, description, link, image } = attributes;
+      const imageUrl = image.data?.attributes.url;
+      list.push({
+        id,
+        title,
+        description,
+        link,
+        image: {
+          url: imageUrl ? `${BASE_URL}${imageUrl}` : null,
+          alternativeText: image.data?.attributes.alternativeText ?? '',
+          caption: image.data?.attributes.caption ?? '',
+        },
+      });
+    });
+  } catch (error) {
+    console.error('Error fetching articles:', error);
+  }
+};
+
+const ionInfinite = (ev: InfiniteScrollCustomEvent) => {
+  getArticles();
+  setTimeout(() => ev.target.complete(), 500);
+};
+</script>
