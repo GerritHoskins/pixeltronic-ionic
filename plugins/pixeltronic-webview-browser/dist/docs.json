@@ -1,0 +1,393 @@
+{
+  "api": {
+    "name": "InAppBrowserInterface",
+    "slug": "inappbrowserinterface",
+    "docs": "",
+    "tags": [],
+    "methods": [
+      {
+        "name": "openWebView",
+        "signature": "(options: OpenOptions) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "OpenOptions"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Open a URL inside the webview or show a hidden webview\nShould only be called after createWebView has finished successfully\noptional headers can be set here as well for example User-Agent",
+        "complexTypes": [
+          "OpenOptions"
+        ],
+        "slug": "openwebview"
+      },
+      {
+        "name": "closeWebView",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Close and destroy an open webview.",
+        "complexTypes": [],
+        "slug": "closewebview"
+      },
+      {
+        "name": "hideWebView",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Hides the current webview.",
+        "complexTypes": [],
+        "slug": "hidewebview"
+      },
+      {
+        "name": "showWebView",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Shows the current webview.",
+        "complexTypes": [],
+        "slug": "showwebview"
+      },
+      {
+        "name": "navigateBack",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Handle back navigation inside the webview",
+        "complexTypes": [],
+        "slug": "navigateback"
+      },
+      {
+        "name": "navigateForward",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Handle forward navigation inside the webview",
+        "complexTypes": [],
+        "slug": "navigateforward"
+      },
+      {
+        "name": "loadUrl",
+        "signature": "(options: { url: string; }) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ url: string; }"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Load a specified URL in an existing webview.",
+        "complexTypes": [],
+        "slug": "loadurl"
+      },
+      {
+        "name": "reload",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Refresh the current page in the webview.",
+        "complexTypes": [],
+        "slug": "reload"
+      },
+      {
+        "name": "onNavigation",
+        "signature": "(listenerFunc: ListenerFunc<NavigationEvent>) => Promise<void>",
+        "parameters": [
+          {
+            "name": "listenerFunc",
+            "docs": "",
+            "type": "ListenerFunc<NavigationEvent>"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Event callback when the webview URL changes.\nResponse parameters:\nnewWindowRequest: boolean;\nisSameHost: boolean;\ncomplete: boolean;\nThis can be used to decide what to do when a URL is requested in a new window\nfrom the same or different host origin. The callback event.complete(true/false)\ncan be used to cancel or continue the load process and to handle the window\nrequest as desired.",
+        "complexTypes": [
+          "ListenerFunc",
+          "NavigationEvent"
+        ],
+        "slug": "onnavigation"
+      },
+      {
+        "name": "onPageLoaded",
+        "signature": "(listenerFunc: ListenerFunc<PageLoadStatus>) => Promise<void>",
+        "parameters": [
+          {
+            "name": "listenerFunc",
+            "docs": "",
+            "type": "ListenerFunc<PageLoadStatus>"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Event triggered by the webview when the target URL has finished loading",
+        "complexTypes": [
+          "ListenerFunc",
+          "PageLoadStatus"
+        ],
+        "slug": "onpageloaded"
+      },
+      {
+        "name": "onPageLoadError",
+        "signature": "(listenerFunc: ListenerFunc<ErrorCode>) => Promise<void>",
+        "parameters": [
+          {
+            "name": "listenerFunc",
+            "docs": "",
+            "type": "ListenerFunc<ErrorCode>"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Event triggered by the webview when URL loading has failed\nReturns the HTTP request error code.",
+        "complexTypes": [
+          "ListenerFunc",
+          "ErrorCode"
+        ],
+        "slug": "onpageloaderror"
+      },
+      {
+        "name": "onUpdateDimensions",
+        "signature": "(listenerFunc: ListenerFunc<void>) => Promise<void>",
+        "parameters": [
+          {
+            "name": "listenerFunc",
+            "docs": "",
+            "type": "ListenerFunc<void>"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Event triggered by the webview when the webview is resized",
+        "complexTypes": [
+          "ListenerFunc"
+        ],
+        "slug": "onupdatedimensions"
+      },
+      {
+        "name": "captureScreen",
+        "signature": "(showScreenCapture: boolean) => Promise<void>",
+        "parameters": [
+          {
+            "name": "showScreenCapture",
+            "docs": "",
+            "type": "boolean"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Create a screenshot of the current view\nand set it as a background of the web view container element.\nThis is needed if there are HTML/Javascript UI elements to be overlaid.",
+        "complexTypes": [],
+        "slug": "capturescreen"
+      },
+      {
+        "name": "updateDimensions",
+        "signature": "(options?: Dimensions) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "Dimensions"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Update the dimensions of the webview",
+        "complexTypes": [
+          "Dimensions"
+        ],
+        "slug": "updatedimensions"
+      }
+    ],
+    "properties": []
+  },
+  "interfaces": [
+    {
+      "name": "OpenOptions",
+      "slug": "openoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "url",
+          "tags": [],
+          "docs": "The URL to open the webview to",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "element",
+          "tags": [],
+          "docs": "element id of DOM node to which the webview should be attached\nweb view only",
+          "complexTypes": [
+            "HTMLElement"
+          ],
+          "type": "HTMLElement"
+        },
+        {
+          "name": "headers",
+          "tags": [],
+          "docs": "Request headers",
+          "complexTypes": [
+            "Headers"
+          ],
+          "type": "Headers"
+        },
+        {
+          "name": "colorScheme",
+          "tags": [],
+          "docs": "Set the color scheme for safari system browser and custom tabs",
+          "complexTypes": [
+            "ColorScheme"
+          ],
+          "type": "ColorScheme"
+        }
+      ]
+    },
+    {
+      "name": "Headers",
+      "slug": "headers",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": []
+    },
+    {
+      "name": "ColorScheme",
+      "slug": "colorscheme",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "toolBarColor",
+          "tags": [],
+          "docs": "Set the toolbar color\nAndroid & iOS",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "navigationBarColor",
+          "tags": [],
+          "docs": "Set the navigation bar color\nAndroid only",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "navigationBarDividerColor",
+          "tags": [],
+          "docs": "Set the navigation bar divider color\nAndroid only",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "secondaryToolbarColor",
+          "tags": [],
+          "docs": "Set the secondar toolbar color\nAndroid only",
+          "complexTypes": [],
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "ListenerFunc",
+      "slug": "listenerfunc",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": []
+    },
+    {
+      "name": "Dimensions",
+      "slug": "dimensions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "width",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "number"
+        },
+        {
+          "name": "height",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "number"
+        },
+        {
+          "name": "x",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "number"
+        },
+        {
+          "name": "y",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "number"
+        },
+        {
+          "name": "ratio",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "number"
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "typeAliases": [
+    {
+      "name": "NavigationEvent",
+      "slug": "navigationevent",
+      "docs": "",
+      "types": [
+        {
+          "text": "{\n  /**\n   *  current url being loaded\n   */\n  url: string;\n  /**\n   *  current url target (new window, i.e. _blank / _self, etc)\n   */\n  newWindowRequest: boolean;\n  /**\n   *  current url is from same host\n   */\n  isSameHost: boolean;\n  /**\n   *  complete current url loading\n   */\n  complete: (allow: boolean) => void;\n}",
+          "complexTypes": []
+        }
+      ]
+    },
+    {
+      "name": "PageLoadStatus",
+      "slug": "pageloadstatus",
+      "docs": "",
+      "types": [
+        {
+          "text": "{ isLoading: boolean }",
+          "complexTypes": []
+        }
+      ]
+    },
+    {
+      "name": "ErrorCode",
+      "slug": "errorcode",
+      "docs": "",
+      "types": [
+        {
+          "text": "{ errorCode: number }",
+          "complexTypes": []
+        }
+      ]
+    }
+  ],
+  "pluginConfigs": []
+}
