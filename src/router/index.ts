@@ -1,39 +1,78 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
-import TabsPage from '../views/TabsPage.vue'
+import TabsPage from '../views/TabsPage.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/tabs/tab1'
+    redirect: '/project-list',
   },
   {
-    path: '/tabs/',
+    path: '/',
     component: TabsPage,
     children: [
       {
         path: '',
-        redirect: '/tabs/tab1'
+        redirect: '/project-list',
       },
       {
-        path: 'tab1',
-        component: () => import('@/views/Tab1Page.vue')
+        path: '/project-list',
+        name: 'ProjectsListView',
+        component: () => import('@/views/project/ListView.vue'),
       },
       {
-        path: 'tab2',
-        component: () => import('@/views/Tab2Page.vue')
+        path: '/add-project',
+        name: 'AddProject',
+        component: () => import('@/views/project/CreateView.vue'),
+      },
+      // Project Details
+      {
+        path: '/project/:projectId',
+        name: 'ProjectDetailView',
+        component: () => import('@/views/project/DetailView.vue'),
+        props: route => ({ projectId: Number(route.params.projectId) }), // Convert projectId to a number
+        children: [
+          {
+            path: 'share',
+            name: 'ShareProject',
+            component: () => import('@/components/ShareProject.vue'),
+          },
+        ],
       },
       {
-        path: 'tab3',
-        component: () => import('@/views/Tab3Page.vue')
-      }
-    ]
-  }
-]
+        path: '/project/:projectId/milestones',
+        name: 'Milestones',
+        component: () => import('@/views/MilestoneManagementView.vue'),
+        props: true,
+      },
+      {
+        path: '/project/:projectId/comments',
+        name: 'Comments',
+        component: () => import('@/components/Comment.vue'),
+        props: true,
+      },
+      {
+        path: '/material-management',
+        name: 'MaterialManagement',
+        component: () => import('@/views/MaterialManagementView.vue'),
+      },
+      {
+        path: '/community-showcase',
+        name: 'CommunityShowCase',
+        component: () => import('@/views/CommunityShowcaseView.vue'),
+      },
+      {
+        path: '/progress-tracking',
+        name: 'ProgressTracking',
+        component: () => import('@/views/ProgressTrackingView.vue'),
+      },
+    ],
+  },
+];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;

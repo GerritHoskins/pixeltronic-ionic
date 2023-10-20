@@ -3,6 +3,7 @@ import { IonicVue } from '@ionic/vue';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import App from './App.vue';
 import router from './router';
+import { createPinia } from 'pinia';
 
 // Call the element loader after the platform has been bootstrapped
 defineCustomElements(window);
@@ -26,7 +27,7 @@ import '@ionic/vue/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
-const app = createApp(App).use(IonicVue).use(router);
+const app = createApp(App).use(IonicVue).use(router).use(createPinia());
 router.isReady().then(() => {
   app.mount('#app');
 });

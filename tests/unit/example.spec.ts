@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'; // For Vue-specific testing utilities
-import Tab1Page from '@/views/Tab1Page.vue'; // Adjust the path accordingly
+import Tab1Page from '../../src/views/project/ListView.vue'; // Adjust the path accordingly
 import { describe, expect, Mock, test, vi, beforeEach } from 'vitest';
 import axios from 'axios';
 
