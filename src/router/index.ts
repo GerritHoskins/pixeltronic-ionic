@@ -35,7 +35,7 @@ const routes: Array<RouteRecordRaw> = [
           {
             path: 'share',
             name: 'ShareProject',
-            component: () => import('@/components/ShareProject.vue'),
+            component: () => import('@/components/modals/ShareProjectModal.vue'),
           },
         ],
       },
@@ -48,7 +48,7 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: '/project/:projectId/comments',
         name: 'Comments',
-        component: () => import('@/components/Comment.vue'),
+        component: () => import('@/components/modals/CommentModal.vue'),
         props: true,
       },
       {

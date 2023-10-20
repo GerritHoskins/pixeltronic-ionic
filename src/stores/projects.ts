@@ -1,18 +1,17 @@
 import { defineStore } from 'pinia';
-import { Milestone, Project, Material, Comment, SharedProject } from '@/models';
+import { Milestone, Project, Material, Comment, State } from '@/models';
 import { useStorage } from '@vueuse/core';
+import { strapiAddComment, strapiAddProject, strapiGetProjects } from '@/api/strapi';
 
 export const useProjectsStore = defineStore('projects', {
-  state: () => {
-    return {
-      selectedProjectId: undefined,
-      projects: useStorage<Project[]>('projects', []),
-      milestones: useStorage<Milestone[]>('milestones', []),
-      materials: useStorage<Material[]>('materials', []),
-      sharedProjects: useStorage<SharedProject[]>('sharedProjects', []),
-      comments: useStorage<Comment[]>('comments', []),
-    };
-  },
+  state: (): State => ({
+    selectedProjectId: undefined,
+    projects: useStorage<Project[]>('projects', []),
+    milestones: useStorage<Milestone[]>('milestones', []),
+    materials: useStorage<Material[]>('materials', []),
+    sharedProjects: useStorage<Project[]>('sharedProjects', []),
+    comments: useStorage<Comment[]>('comments', []),
+  }),
 
   getters: {
     getMilestonesByProjectId: state => (projectId: number) => {
@@ -29,11 +28,34 @@ export const useProjectsStore = defineStore('projects', {
   },
 
   actions: {
+    async fetchProjects() {
+      const response = await strapiGetProjects();
+      const projects = response.data?.data;
+      projects.map(({ id, attributes }) => {
+        const { name, description, startDate, endDate, image } = attributes;
+        const imageUrl = image.data?.attributes.url;
+        this.projects.push({
+          id,
+          name,
+          description,
+          startDate,
+          endDate,
+          image: {
+            url: imageUrl ? `https://pixeltronic.info/strapi/${imageUrl}` : null,
+            alternativeText: image.data?.attributes.alternativeText ?? '',
+            caption: image.data?.attributes.caption ?? '',
+          },
+        });
+      });
+      this.saveState();
+    },
+
     setSelectedProjectId(projectId: number) {
       this.selectedProjectId = projectId;
     },
 
-    addProject(project: Project) {
+    async addProject(project: Project) {
+      await strapiAddProject(project);
       this.projects?.push(project);
       this.saveState();
     },
@@ -48,11 +70,9 @@ export const useProjectsStore = defineStore('projects', {
       this.saveState();
     },
 
-    addComment(comment: Comment) {
-      //const sharedProject = this.sharedProjects.find(sp => sp.projectId === projectId);
-      //  if (sharedProject) {
+    async addComment(comment: Comment) {
       this.comments.push(comment);
-      //   }
+      await strapiAddComment(comment);
       this.saveState();
     },
 
@@ -76,15 +96,8 @@ export const useProjectsStore = defineStore('projects', {
       }
     },
 
-    shareProject(projectId: number, userId: string) {
-      const sharedProject: SharedProject = {
-        id: Date.now(),
-        projectId: projectId,
-        sharedBy: userId,
-        sharedOn: new Date(),
-        comments: [],
-      };
-      this.sharedProjects.push(sharedProject);
+    shareProject(project: Project) {
+      this.sharedProjects.push(project);
     },
   },
 });

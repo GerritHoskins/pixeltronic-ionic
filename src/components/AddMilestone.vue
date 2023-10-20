@@ -15,7 +15,7 @@
     </ion-datetime>
   </ion-item>
 
-  <ion-button @click="addMilestone">Add Milestone</ion-button>
+  <ion-button size="small" @click="addMilestone">Add Milestone</ion-button>
 </template>
 
 <script setup lang="ts">
@@ -27,12 +27,13 @@ import { IonItem, IonDatetime, IonTextarea, IonButton, IonInput } from '@ionic/v
 import { formatDate } from '@/utils/formatDate';
 
 const projectsStore = useProjectsStore();
-const router = useRouter();
 const route = useRoute();
 
 const projectId = Number(route.params.projectId);
 
 const milestone = ref<Milestone>({
+  completedMilestones: [],
+  status: 'Not Started',
   id: Date.now(),
   projectId: projectId,
   name: '',
@@ -42,6 +43,5 @@ const milestone = ref<Milestone>({
 
 const addMilestone = () => {
   projectsStore.addMilestone(milestone.value);
-  router.back(); // Return to the previous view after adding the milestone
 };
 </script>

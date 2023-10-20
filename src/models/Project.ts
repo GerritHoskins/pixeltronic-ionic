@@ -4,5 +4,11 @@ export default interface Project {
   description: string;
   startDate: Date;
   endDate?: Date;
-  image?: string;
+  image?: ImageAttributes;
+  comments?: number[];
+}
+interface ImageAttributes {
+  url: string | null;
+  alternativeText: string;
+  caption: string;
 }

@@ -13,5 +13,5 @@
 
 <script setup lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
-import AddProject from '@/components/AddProject.vue';
+import AddProject from '@/components/modals/AddProjectModal.vue';
 </script>

@@ -8,16 +8,14 @@
     <ion-content>
       <ion-card>
         <ion-card-header>
-          <ion-card-title>{{ project.name }}</ion-card-title>
+          <ion-card-subtitle>
+            <ion-thumbnail> <img :alt="project.name" :src="project.image.url" /> </ion-thumbnail
+          ></ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
           <p>{{ project.description }}</p>
-
-          <!-- Links to other project-related features can be added here -->
-          <ion-button @click="navigateToMaterialManagement">Manage Materials</ion-button>
-          <!-- ... other features (milestones, community share, etc.) -->
-          <ion-button @click="navigateToMilestones">Milestones</ion-button>
-          <!-- Progress Tracking Dropdown -->
+          <ion-button size="small" @click="navigateToMaterialManagement">Manage Materials</ion-button>
+          <ion-button size="small" @click="navigateToMilestones">Milestones</ion-button>
           <ion-select
             label="Track process"
             v-model="project.status"
@@ -29,11 +27,7 @@
           </ion-select>
 
           <!-- Community Sharing Button -->
-          <ion-button @click="toggleShareModal"> Share </ion-button>
-          <share-project @close-share-modal="toggleShareModal" :show="showShareModal" :project-id="project.id" />
-
-          <ion-button @click="toggleCommentModal">Comment</ion-button>
-          <comment @close-comment-modal="toggleCommentModal" :show="showCommentModal" :project-id="project.id" />
+          <ion-toggle @ionChange="shareProject">Make public?</ion-toggle>
         </ion-card-content>
       </ion-card>
     </ion-content>
@@ -47,19 +41,19 @@ import { useRouter, useRoute } from 'vue-router';
 import {
   IonHeader,
   IonPage,
+  IonToggle,
+  IonCardSubtitle,
   IonTitle,
   IonContent,
   IonCard,
   IonCardHeader,
-  IonCardTitle,
+  IonThumbnail,
   IonCardContent,
   IonToolbar,
   IonButton,
   IonSelectOption,
   IonSelect,
 } from '@ionic/vue';
-import ShareProject from '@/components/ShareProject.vue';
-import Comment from '@/components/Comment.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -67,8 +61,6 @@ const projectsStore = useProjectsStore();
 
 const projectId = Number(route.params.projectId);
 const project = ref(projectsStore.getProjectById(projectId));
-const showShareModal = ref(false);
-const showCommentModal = ref(false);
 
 const navigateToMaterialManagement = () => {
   router.push(`/project/${projectId}/material-management`);
@@ -78,17 +70,15 @@ const navigateToMilestones = () => {
   router.push(`/project/${projectId}/milestones`);
 };
 
-const toggleCommentModal = () => {
-  //router.push(`/project/${projectId}/comments`);
-  showCommentModal.value = !showCommentModal.value;
-};
-
-const toggleShareModal = () => {
-  //router.push(`/project/${projectId}/share`);
-  showShareModal.value = !showShareModal.value;
-};
+const shareProject = () => projectsStore.shareProject(project.value);
 
 const updateProjectStatus = (projectId: number, status: 'Not Started' | 'In Progress' | 'Completed') => {
   projectsStore.updateProjectStatus(projectId, status);
 };
 </script>
+
+<style>
+ion-thumbnail {
+  --size: 200px;
+}
+</style>

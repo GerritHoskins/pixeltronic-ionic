@@ -23,7 +23,10 @@
           placeholder="New Milestone"
           :value="newMilestoneName"
         ></ion-input>
-        <ion-button slot="end" @click="addMilestone">Add</ion-button>
+        <ion-button slot="end" size="small" @click="addMilestone">Add</ion-button>
+      </ion-item>
+      <ion-item>
+        <ion-button @click="router.back()">Done</ion-button>
       </ion-item>
     </ion-content>
   </ion-page>
@@ -52,7 +55,6 @@ const route = useRoute();
 
 const projectsStore = useProjectsStore();
 const projectId = Number(route.params.projectId);
-//const { projectId } = toRefs(props);
 const milestones = projectsStore.getMilestonesByProjectId(projectId);
 
 const newMilestoneName = ref('');

@@ -18,8 +18,12 @@
           loading-spinner="bubbles"
         ></ion-infinite-scroll-content>
       </ion-infinite-scroll>
-      <ion-button expand="full" @click="toggleNewProjectModal">Add New Project</ion-button>
-      <AddProject :show="showNewProjectModal" @close-new-project-modal="toggleNewProjectModal" />
+      <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+        <ion-fab-button @click="toggleNewProjectModal">
+          <ion-icon :icon="add"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+      <AddProjectModal :show="showNewProjectModal" @close-new-project-modal="toggleNewProjectModal" />
     </ion-content>
   </ion-page>
 </template>
@@ -28,7 +32,11 @@
 import { ref } from 'vue';
 import { useProjectsStore } from '@/stores/projects';
 import { useRouter } from 'vue-router';
+import { add } from 'ionicons/icons';
 import {
+  IonFab,
+  IonFabButton,
+  IonIcon,
   InfiniteScrollCustomEvent,
   IonHeader,
   IonPage,
@@ -42,7 +50,7 @@ import {
   IonItem,
   IonButton,
 } from '@ionic/vue';
-import AddProject from '@/components/AddProject.vue';
+import AddProjectModal from '@/components/modals/AddProjectModal.vue';
 
 const router = useRouter();
 const projectsStore = useProjectsStore();

@@ -16,7 +16,6 @@
             <ion-button @click="removeMaterial(material.id)" color="danger">Delete</ion-button>
           </ion-buttons>
         </ion-item>
-
         <ion-item>
           <ion-input label="Material name" v-model="newMaterial.name"></ion-input>
         </ion-item>
@@ -52,6 +51,7 @@ import { Material } from '@/models';
 import { useProjectsStore } from '@/stores/projects';
 import ProjectSelector from '@/components/ProjectSelector.vue';
 import { uniqueId } from '@/utils/uniqueId';
+
 const projectStore = useProjectsStore();
 const projectId = ref(projectStore.selectedProjectId);
 const materials = ref<Material[]>(projectStore.materials.filter(mat => mat.projectId === projectId.value));

@@ -17,10 +17,10 @@
 
 <script setup lang="ts">
 import { Share } from '@capacitor/share';
-import {} from '@ionic/vue';
+import { IonButton, IonButtons, IonContent, IonHeader, IonModal, IonTitle, IonToolbar } from '@ionic/vue';
 import { useProjectsStore } from '@/stores/projects';
 
-defineProps<{
+const props = defineProps<{
   show: boolean;
   projectId: number;
 }>();
@@ -43,7 +43,7 @@ const shareOnPlatform = async (platform: string) => {
     });
   } else {
     // TODO: authentication system.
-    projectsStore.shareProject(projectId, 'userID123');
+    projectsStore.shareProject(props.projectId, 'userID123');
   }
 };
 </script>

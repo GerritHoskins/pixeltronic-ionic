@@ -2,7 +2,7 @@
   <ion-modal :is-open="show">
     <ion-header>
       <ion-toolbar>
-        <ion-title>Share Project</ion-title>
+        <ion-title>Add Project</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="closeModal">Close</ion-button>
         </ion-buttons>
@@ -20,7 +20,6 @@
           <ion-datetime @on-ion-change="formatDate(project.startDate)"></ion-datetime>
         </ion-item>
       </ion-list>
-
       <ion-button @click="addProject">Add Project</ion-button>
     </ion-content>
   </ion-modal>
@@ -45,7 +44,6 @@ import {
   IonContent,
 } from '@ionic/vue';
 import { formatDate } from '@vueuse/core';
-import { useRouter } from 'vue-router';
 import { uniqueId } from '@/utils/uniqueId';
 
 defineProps<{
