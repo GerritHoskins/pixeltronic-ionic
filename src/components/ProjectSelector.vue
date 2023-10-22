@@ -2,7 +2,7 @@
   <ion-list>
     <ion-item>
       <ion-select label="Selected Project" placeholder="Project" @ionChange="changeProjectId($event)">
-        <ion-select-option v-for="project in projects" :key="project.id" :value="project.id">{{
+        <ion-select-option v-for="project in props.projects" :key="project.id" :value="project.id">{{
           project.name
         }}</ion-select-option>
       </ion-select>
@@ -14,11 +14,18 @@
 import { IonItem, IonList, IonSelect, IonSelectOption } from '@ionic/vue';
 import { useProjectsStore } from '@/stores/projects';
 import { Project } from '@/models';
-import { ref } from 'vue';
+
+const emit = defineEmits<{
+  (e: 'update-project-id', id: number): void;
+}>();
+
+const props = defineProps<{
+  projects: Project[];
+}>();
 
 const projectStore = useProjectsStore();
-const projects = ref<Project[]>(projectStore.projects);
 const changeProjectId = (event: CustomEvent) => {
+  emit('update-project-id', event.detail.value);
   projectStore.setSelectedProjectId(event.detail.value);
 };
 </script>

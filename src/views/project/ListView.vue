@@ -1,15 +1,19 @@
 <template>
   <ion-page>
     <ion-header>
-      <ion-toolbar>
-        <ion-title>My projects</ion-title>
-      </ion-toolbar>
+      <toolbar-nav title="My projects" />
     </ion-header>
-    <ion-content color="light">
+    <ion-content>
       <ion-list>
-        <ion-item v-for="project in projects" :key="project.id" button :detail="false">
+        <ion-item
+          v-for="project in projects"
+          :key="project.id"
+          button
+          :detail="false"
+          :router-link="`/project/${project.id}`"
+        >
+          <ion-badge slot="end" :color="statusColor(project.status)">{{ project.status }}</ion-badge>
           <ion-label> {{ project.name }} </ion-label>
-          <ion-button slot="end" @click="navigateToProjectDetail(project.id)">View</ion-button>
         </ion-item>
       </ion-list>
       <ion-infinite-scroll @ionInfinite="ionInfinite">
@@ -19,11 +23,10 @@
         ></ion-infinite-scroll-content>
       </ion-infinite-scroll>
       <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-        <ion-fab-button @click="toggleNewProjectModal">
+        <ion-fab-button @click="router.push('/add-project')">
           <ion-icon :icon="add"></ion-icon>
         </ion-fab-button>
       </ion-fab>
-      <AddProjectModal :show="showNewProjectModal" @close-new-project-modal="toggleNewProjectModal" />
     </ion-content>
   </ion-page>
 </template>
@@ -34,39 +37,34 @@ import { useProjectsStore } from '@/stores/projects';
 import { useRouter } from 'vue-router';
 import { add } from 'ionicons/icons';
 import {
+  InfiniteScrollCustomEvent,
+  IonBadge,
+  IonContent,
   IonFab,
   IonFabButton,
-  IonIcon,
-  InfiniteScrollCustomEvent,
   IonHeader,
-  IonPage,
-  IonTitle,
-  IonContent,
-  IonToolbar,
+  IonIcon,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
-  IonList,
-  IonLabel,
   IonItem,
-  IonButton,
+  IonLabel,
+  IonList,
+  IonPage,
 } from '@ionic/vue';
-import AddProjectModal from '@/components/modals/AddProjectModal.vue';
+import { Status } from '@/models/Project';
+import ToolbarNav from '@/components/ToolbarNav.vue';
 
 const router = useRouter();
 const projectsStore = useProjectsStore();
 const projects = ref(projectsStore.projects);
-const showNewProjectModal = ref(false);
-
-const navigateToProjectDetail = (projectId: number) => {
-  router.push(`/project/${projectId}`);
-};
-
-const toggleNewProjectModal = () => {
-  //router.push('/add-project');
-  showNewProjectModal.value = !showNewProjectModal.value;
-};
 
 const ionInfinite = (ev: InfiniteScrollCustomEvent) => {
   setTimeout(() => ev.target.complete(), 500);
+};
+
+const statusColor = (status: Status) => {
+  if (status === Status.InProgress) return 'warning';
+  if (status === Status.NotStarted) return 'medium';
+  return 'success';
 };
 </script>

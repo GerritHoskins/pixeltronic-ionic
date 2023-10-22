@@ -1,78 +1,72 @@
 <template>
   <ion-page>
     <ion-header>
-      <ion-toolbar>
-        <ion-title>Manage Milestones</ion-title>
-      </ion-toolbar>
+      <toolbar-nav title="Milestone Manager" />
     </ion-header>
-
-    <ion-content>
-      <!-- List of milestones -->
+    <ion-content fullscreen class="ion-padding">
       <ion-list>
         <ion-item v-for="milestone in milestones" :key="milestone.id">
           <ion-label>{{ milestone.name }}</ion-label>
-          <ion-button @click="markAsCompleted(milestone.id)" v-if="!milestone.completed">Mark as Completed</ion-button>
+          <ion-button color="tertiary" @click="markAsCompleted(milestone?.id)" v-if="milestone.status !== 'Completed'"
+            >Mark as Completed</ion-button
+          >
+          <ion-button color="success" v-else>Completed</ion-button>
+        </ion-item>
+        <ion-item>
+          <ion-input v-model="newMilestoneName" placeholder="New Milestone"></ion-input>
+          <ion-button slot="end" size="small" @click="addMilestone">Add</ion-button>
         </ion-item>
       </ion-list>
-
-      <!-- Add new milestone -->
-      <ion-item>
-        <ion-input
-          v-model="newMilestoneName"
-          :clear-input="true"
-          placeholder="New Milestone"
-          :value="newMilestoneName"
-        ></ion-input>
-        <ion-button slot="end" size="small" @click="addMilestone">Add</ion-button>
-      </ion-item>
-      <ion-item>
-        <ion-button @click="router.back()">Done</ion-button>
-      </ion-item>
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useProjectsStore } from '@/stores/projects';
-import {
-  IonLabel,
-  IonHeader,
-  IonPage,
-  IonTitle,
-  IonContent,
-  IonInput,
-  IonToolbar,
-  IonList,
-  IonItem,
-  IonButton,
-} from '@ionic/vue';
-import { useRouter, useRoute } from 'vue-router';
+import { IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonList, IonPage } from '@ionic/vue';
+import { useRoute } from 'vue-router';
 import { uniqueId } from '@/utils/uniqueId';
+import Milestone, { Status } from '@/models/Milestone';
+import { strapiGetMilestones } from '@/api/strapi';
+import ToolbarNav from '@/components/ToolbarNav.vue';
 
-const router = useRouter();
 const route = useRoute();
 
 const projectsStore = useProjectsStore();
 const projectId = Number(route.params.projectId);
-const milestones = projectsStore.getMilestonesByProjectId(projectId);
 
+const milestones = ref<Milestone[]>();
 const newMilestoneName = ref('');
+const loading = ref(true);
+const error = ref(false);
 
-const addMilestone = () => {
+onMounted(async () => {
+  try {
+    milestones.value = await projectsStore.fetchMilestones(`filters[projectId][$eq]=${projectId}`);
+  } catch (e) {
+    error.value = true;
+  } finally {
+    loading.value = false;
+  }
+});
+
+const addMilestone = async () => {
   if (newMilestoneName.value) {
-    projectsStore.addMilestone({
+    const milestone = {
       id: uniqueId(),
       projectId,
       name: newMilestoneName.value,
-      completed: false,
-    });
+      status: Status.InProgress,
+    };
+    await projectsStore.addMilestone(milestone);
     newMilestoneName.value = '';
-    router.back(); // Return to the previous view after adding the milestone
+    milestones.value.push(milestone);
+    await strapiGetMilestones();
   }
 };
 
-const markAsCompleted = (milestoneId: number) => {
-  projectsStore.markMilestoneAsCompleted(milestoneId);
+const markAsCompleted = (milestoneId: number, status: Status) => {
+  projectsStore.markMilestoneAsCompleted(milestoneId, status);
 };
 </script>

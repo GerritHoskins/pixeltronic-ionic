@@ -1,13 +1,11 @@
 <template>
   <ion-page>
     <ion-header>
-      <ion-toolbar>
-        <ion-title>Material Management</ion-title>
-      </ion-toolbar>
+      <toolbar-nav title="Material Management" />
     </ion-header>
 
-    <ion-content>
-      <ProjectSelector />
+    <ion-content fullscreen class="ion-padding">
+      <project-selector @update-project-id="projectId = $event" :projects="projectStore.projects || []" />
       <ion-list>
         <ion-item v-for="material in materials" :key="material.id">
           <ion-label>{{ material.name }}</ion-label>
@@ -28,29 +26,45 @@
       </ion-list>
 
       <ion-button @click="addMaterial">Add</ion-button>
+
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6" :key="photo.filepath" v-for="photo in photos">
+            <ion-img :src="photo.webviewPath" @click="showActionSheet(photo)"></ion-img>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import {
   IonHeader,
   IonPage,
   IonLabel,
   IonContent,
-  IonToolbar,
   IonInput,
   IonList,
   IonItem,
-  IonTitle,
   IonButtons,
   IonButton,
+  IonCol,
+  IonGrid,
+  IonImg,
+  IonRow,
 } from '@ionic/vue';
 import { Material } from '@/models';
 import { useProjectsStore } from '@/stores/projects';
 import ProjectSelector from '@/components/ProjectSelector.vue';
 import { uniqueId } from '@/utils/uniqueId';
+import ToolbarNav from '@/components/ToolbarNav.vue';
+import { usePhotoGallery, UserPhoto } from '@/composables/usePhotoGallery';
+
+const { photos, takePhoto, loadSaved, cachePhotos, deletePhoto } = usePhotoGallery();
+watch(photos, cachePhotos);
+onMounted(loadSaved);
 
 const projectStore = useProjectsStore();
 const projectId = ref(projectStore.selectedProjectId);
@@ -93,5 +107,30 @@ const editMaterial = (material: Material) => {
 
 const removeMaterial = (materialId: number) => {
   materials.value = materials.value.filter(m => m.id !== materialId);
+};
+
+const showActionSheet = async (photo: UserPhoto) => {
+  const actionSheet = await actionSheetController.create({
+    header: 'Photos',
+    buttons: [
+      {
+        text: 'Delete',
+        role: 'destructive',
+        icon: trash,
+        handler: () => {
+          deletePhoto(photo);
+        },
+      },
+      {
+        text: 'Cancel',
+        icon: close,
+        role: 'cancel',
+        handler: () => {
+          // Nothing to do, action sheet is automatically closed
+        },
+      },
+    ],
+  });
+  await actionSheet.present();
 };
 </script>

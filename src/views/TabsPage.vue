@@ -28,6 +28,24 @@
 </template>
 
 <script setup lang="ts">
-import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet } from '@ionic/vue';
+import {
+  IonTabBar,
+  IonTabButton,
+  IonTabs,
+  IonLabel,
+  IonIcon,
+  IonPage,
+  IonRouterOutlet,
+  loadingController,
+} from '@ionic/vue';
 import { square } from 'ionicons/icons';
+import { onMounted } from 'vue';
+
+onMounted(async () => {
+  const loading = await loadingController.create({
+    message: 'Loading...',
+    duration: 300,
+  });
+  await loading.present();
+});
 </script>
