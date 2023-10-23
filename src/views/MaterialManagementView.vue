@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref } from 'vue';
 import {
   IonHeader,
   IonPage,
@@ -54,17 +54,19 @@ import {
   IonGrid,
   IonImg,
   IonRow,
+  actionSheetController,
 } from '@ionic/vue';
 import { Material } from '@/models';
 import { useProjectsStore } from '@/stores/projects';
 import ProjectSelector from '@/components/ProjectSelector.vue';
 import { uniqueId } from '@/utils/uniqueId';
 import ToolbarNav from '@/components/ToolbarNav.vue';
-import { usePhotoGallery, UserPhoto } from '@/composables/usePhotoGallery';
+
+/*import { UserPhoto } from '@/composables/usePhotoGallery';
 
 const { photos, takePhoto, loadSaved, cachePhotos, deletePhoto } = usePhotoGallery();
 watch(photos, cachePhotos);
-onMounted(loadSaved);
+onMounted(loadSaved);*/
 
 const projectStore = useProjectsStore();
 const projectId = ref(projectStore.selectedProjectId);
@@ -102,14 +104,14 @@ const addMaterial = () => {
 };
 
 const editMaterial = (material: Material) => {
-  // Implement edit functionality, potentially showing a modal or another view.
+  //TODO: Implement edit functionality, potentially showing a modal or another view.
 };
 
 const removeMaterial = (materialId: number) => {
   materials.value = materials.value.filter(m => m.id !== materialId);
 };
 
-const showActionSheet = async (photo: UserPhoto) => {
+const showActionSheet = async () => {
   const actionSheet = await actionSheetController.create({
     header: 'Photos',
     buttons: [
@@ -118,7 +120,7 @@ const showActionSheet = async (photo: UserPhoto) => {
         role: 'destructive',
         icon: trash,
         handler: () => {
-          deletePhoto(photo);
+          //deletePhoto(photo);
         },
       },
       {
