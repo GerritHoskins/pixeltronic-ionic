@@ -70,13 +70,14 @@ import {
   IonItem,
   IonLabel,
   IonList,
+  IonCard,
   IonGrid,
   IonRow,
   IonCol,
   IonPage,
 } from '@ionic/vue';
 import ToolbarNav from '@/components/ToolbarNav.vue';
-import { useUserStore } from '@/stores/user';
+import useUserStore from '@/stores/user';
 
 const router = useRouter();
 const projectsStore = useProjectsStore();

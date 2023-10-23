@@ -1,82 +1,78 @@
 import { defineStore } from 'pinia';
 import { Comment, Material, Milestone, Project, State } from '@/models';
 import {
-  strapiAddComment,
   strapiAddMaterials,
-  strapiAddMilestone,
   strapiAddProject,
-  strapiGetComments,
   strapiGetMaterials,
-  strapiGetMilestones,
   strapiGetProjects,
-  strapiUpdateMilestone,
   strapiUpdateProject,
 } from '@/api/strapi';
-import { MilestoneStatus } from '@/models/Milestone';
 import { ProjectStatus } from '@/models/Project';
 import { ProgressColor } from '@/models/ProgressColor';
-import { useUserStore } from '@/stores/user';
+import useUserStore from '@/stores/user';
+import { useApiResponseMapper } from '@/composables/useApiResponseMapper';
+import { useAsyncQueue } from '@vueuse/core';
+import useCommentStore from '@/stores/comment';
+import useMilestoneStore from '@/stores/milestone';
 
-export const useProjectsStore = defineStore('projects', {
+export const useProjectsStore = defineStore('project', {
   state: (): State => ({
     initialized: false,
     selectedProjectId: undefined,
-    projects: [],
-    milestones: [],
-    materials: [],
-    comments: [],
+    project: [] as Project[],
+    milestone: [] as Milestone[],
+    material: [] as Material[],
+    comment: [] as Comment[],
   }),
 
   getters: {
-    getMilestonesByProjectId: state => (projectId: number) => {
-      return state.milestones.filter(m => Number(m.projectId) === projectId);
-    },
-
-    getCommentsByProjectId: state => (projectId: number) => {
-      return state.comments.filter(c => Number(c.projectId) === projectId);
-    },
-
     getProjectById: state => (projectId: number) => {
-      return state.projects.find(p => Number(p.id) === projectId);
+      return state.project.find(p => Number(p.id) === projectId);
     },
 
     getUserProjects: state => () => {
       const userStore = useUserStore();
-      return state.projects.filter(p => p.user === userStore.user.username);
+      return state.project.filter(p => p.user === userStore?.user?.username);
     },
   },
 
   actions: {
+    async initialize() {
+      this.initialized = false;
+
+      const userStore = useUserStore();
+      const commentStore = useCommentStore();
+      const milestoneStore = useMilestoneStore();
+
+      const { result } = useAsyncQueue([
+        this.fetchProjects,
+        userStore.syncUser,
+        commentStore.fetchComments,
+        milestoneStore.fetchMilestones,
+      ]);
+
+      if (result) {
+        this.initialized = true;
+      }
+    },
+
     async fetchProjects() {
+      const { mapper } = useApiResponseMapper();
       const response = await strapiGetProjects();
-      this.projects = await this.mapApiResponseToStructure(response, 'projects');
-      return [...this.projects];
+      this.project = await mapper(response, 'project');
+      return [...this.project];
     },
 
     async fetchSharedProjects(filter: string) {
+      const { mapper } = useApiResponseMapper();
       const response = await strapiGetProjects(filter);
-      return this.mapApiResponseToStructure(response, 'projects');
-    },
-
-    async fetchComments() {
-      const response = await strapiGetComments();
-      this.comments = await this.mapApiResponseToStructure(response, 'comments');
-    },
-
-    async fetchSharedComments(filter: string) {
-      const response = await strapiGetComments(filter);
-      return this.mapApiResponseToStructure(response, 'comments');
-    },
-
-    async fetchMilestones(filter?: string) {
-      const response = await strapiGetMilestones(filter);
-      this.milestones = await this.mapApiResponseToStructure(response, 'milestones');
-      return [...this.milestones];
+      return mapper(response, 'project');
     },
 
     async fetchMaterials() {
+      const { mapper } = useApiResponseMapper();
       const response = await strapiGetMaterials();
-      this.materials = await this.mapApiResponseToStructure(response, 'materials');
+      this.material = mapper(response, 'material');
     },
 
     setSelectedProjectId(projectId: number) {
@@ -85,114 +81,37 @@ export const useProjectsStore = defineStore('projects', {
 
     async addProject(project: Project) {
       await strapiAddProject(project);
-      this.projects?.push(project);
-    },
-
-    async addMilestone(milestone: Milestone) {
-      await strapiAddMilestone(milestone);
-      this.milestones.push(milestone);
+      this.project?.push(project);
     },
 
     async addMaterial(material: Material) {
       await strapiAddMaterials(material);
-      this.materials.push(material);
-    },
-
-    async addComment(comment: Comment) {
-      await strapiAddComment(comment);
-      this.comments.push(comment);
+      this.material.push(material);
     },
 
     async updateProjectStatus(projectId: number, status: ProjectStatus) {
-      const project = this.projects.find(p => p.id === projectId);
-      if (project) {
-        project.status = status ?? ProjectStatus.NOT_STARTED;
-        project.statusColor =
-          status === ProjectStatus.COMPLETED
-            ? ProgressColor.SUCCESS
-            : status === ProjectStatus.IN_PROGRESS
-            ? ProgressColor.WARNING
-            : ProgressColor.DEFAULT;
-      }
-      await strapiUpdateProject(project);
-    },
+      this.project.find(project => {
+        if (project.id === projectId) {
+          project.status = status ?? ProjectStatus.NOT_STARTED;
+          project.statusColor =
+            status === ProjectStatus.COMPLETED
+              ? ProgressColor.SUCCESS
+              : status === ProjectStatus.IN_PROGRESS
+              ? ProgressColor.WARNING
+              : ProgressColor.DEFAULT;
 
-    async markMilestoneAsCompleted(milestoneId: number) {
-      const milestoneIndex = this.milestones.findIndex(m => m.id === milestoneId);
-      if (milestoneIndex !== -1) {
-        this.milestones[milestoneIndex].status = MilestoneStatus.COMPLETED;
-        this.milestones[milestoneIndex].statusColor = ProgressColor.SUCCESS;
-      }
-
-      await strapiUpdateMilestone(this.milestones[milestoneIndex]);
+          return strapiUpdateProject(project);
+        }
+      });
     },
 
     async shareProject(project: Project) {
-      const projectToShare = this.projects.find(p => p.id === project.id);
-      projectToShare.shared = true;
-      await strapiUpdateProject(projectToShare);
+      const projectToShare = this.project.find(p => p.id === project.id);
+      if (projectToShare) {
+        projectToShare.shared = true;
+        await strapiUpdateProject(projectToShare);
+      }
       await strapiGetProjects();
-    },
-
-    async mapApiResponseToStructure(response: any, structure: string): Promise<any[]> {
-      const responseData = response.value?.data;
-      if (!responseData) return [];
-
-      return responseData.map(({ id, attributes }) => {
-        switch (structure) {
-          case 'projects': {
-            const { name, description, startDate, endDate, user, status, statusColor, image, shared } = attributes;
-            const imageUrl = image.data?.attributes.url;
-            return {
-              id,
-              name,
-              description,
-              startDate,
-              endDate,
-              user,
-              status,
-              statusColor,
-              image: {
-                url: imageUrl ? `https://pixeltronic.info/strapi/${imageUrl}` : null,
-                alternativeText: image.data?.attributes.alternativeText ?? '',
-                caption: image.data?.attributes.caption ?? '',
-              },
-              shared,
-            };
-          }
-          case 'comments': {
-            const { projectId, comments, commentedOn, commentedBy } = attributes;
-            return {
-              id,
-              projectId,
-              comments,
-              commentedOn,
-              commentedBy,
-            };
-          }
-          case 'milestones': {
-            const { projectId: milestoneProjectId, name, status, statusColor } = attributes;
-            return {
-              id,
-              projectId: milestoneProjectId,
-              name,
-              status,
-              statusColor,
-            };
-          }
-          case 'materials': {
-            const { projectId: materialProjectId, name, quantity, acquired } = attributes;
-            return {
-              projectId: materialProjectId,
-              name,
-              quantity,
-              acquired,
-            };
-          }
-          default:
-            return {};
-        }
-      });
     },
   },
 });

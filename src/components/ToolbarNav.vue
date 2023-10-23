@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import { IonBackButton, IonTitle, IonLabel, IonIcon, IonButton, IonButtons, IonToolbar } from '@ionic/vue';
 import { chevronBack, logOut } from 'ionicons/icons';
-import { useUserStore } from '@/stores/user';
+import useUserStore from '@/stores/user';
 
 defineProps<{
   title: string;

@@ -7,17 +7,17 @@ export default interface Project {
   startDate: Date;
   endDate?: Date;
   user?: string;
-  image?: ImageAttributes;
+  image?: Record<string, any>;
   status?: ProjectStatus;
   statusColor?: ProgressColor;
   comments?: number[];
   shared?: boolean;
 }
 
-interface ImageAttributes {
-  url: string | null;
-  alternativeText: string;
-  caption: string;
+export interface ImageAttributes {
+  url?: string | null;
+  alternativeText?: string;
+  caption?: string;
 }
 
 export enum ProjectStatus {

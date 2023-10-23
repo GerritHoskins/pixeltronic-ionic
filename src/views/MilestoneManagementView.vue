@@ -31,10 +31,10 @@ import Milestone, { MilestoneStatus } from '@/models/Milestone';
 import { strapiGetMilestones } from '@/api/strapi';
 import ToolbarNav from '@/components/ToolbarNav.vue';
 import { ProgressColor } from '@/models/ProgressColor';
+import useMilestoneStore from '@/stores/milestone';
 
 const route = useRoute();
 
-const projectsStore = useProjectsStore();
 const projectId = Number(route.params.projectId);
 
 const milestones = ref<Milestone[]>();
@@ -42,9 +42,10 @@ const newMilestoneName = ref('');
 const loading = ref(true);
 const error = ref(false);
 
+const milestoneStore = useMilestoneStore();
 onMounted(async () => {
   try {
-    milestones.value = await projectsStore.fetchMilestones(`filters[projectId][$eq]=${projectId}`);
+    milestones.value = await milestoneStore.fetchMilestones(`filters[projectId][$eq]=${projectId}`);
   } catch (e) {
     error.value = true;
   } finally {
@@ -61,14 +62,14 @@ const addMilestone = async () => {
       status: MilestoneStatus.IN_PROGRESS,
       statusColor: ProgressColor.WARNING,
     };
-    await projectsStore.addMilestone(milestone);
+    await milestoneStore.addMilestone(milestone);
     newMilestoneName.value = '';
-    milestones.value.push(milestone);
+    milestones.value?.push(milestone);
     await strapiGetMilestones();
   }
 };
 
-const markAsCompleted = (milestoneId: number, status: MilestoneStatus) => {
-  projectsStore.markMilestoneAsCompleted(milestoneId, status);
+const markAsCompleted = (milestoneId: number) => {
+  milestoneStore.markMilestoneAsCompleted(milestoneId);
 };
 </script>

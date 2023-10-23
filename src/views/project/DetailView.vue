@@ -1,25 +1,24 @@
 <template>
   <ion-page>
     <ion-header>
-      <toolbar-nav :title="`Project: ${project.name}`" />
+      <toolbar-nav :title="`Project: ${project?.name}`" />
     </ion-header>
 
     <ion-content fullscreen class="ion-padding">
       <ion-card>
-        <ion-card-header>
-          <ion-card-subtitle> </ion-card-subtitle>
-        </ion-card-header>
         <ion-card-content>
           <ion-grid>
             <ion-row>
               <ion-col size="12" size-md="6" size-lg="6">
                 <img
-                  :alt="project.name"
-                  :src="project.image.url ?? 'https://pixeltronic.info/strapi//uploads/code_5290465_640_34bc1fc40d.jpg'"
+                  :alt="project?.name"
+                  :src="
+                    project?.image?.url ?? 'https://pixeltronic.info/strapi/uploads/code_5290465_640_34bc1fc40d.jpg'
+                  "
                 />
               </ion-col>
               <ion-col size="12" size-md="6" size-lg="6">
-                <p>{{ project.description }}</p>
+                <p>{{ project?.description }}</p>
               </ion-col>
             </ion-row>
             <ion-row>
@@ -29,7 +28,7 @@
                     <ion-select
                       label="Status"
                       v-model="project.status"
-                      @ionChange="updateProjectStatus(project.id, $event.detail.value)"
+                      @ionChange="updateProjectStatus(project?.id, $event.detail.value)"
                     >
                       <ion-select-option value="Not Started">Not Started</ion-select-option>
                       <ion-select-option value="In Progress">In Progress</ion-select-option>
@@ -37,7 +36,7 @@
                     </ion-select>
                   </ion-item>
                   <ion-item>
-                    <ion-toggle :checked="project.shared" @ionChange="onToggle($event)">Make public?</ion-toggle>
+                    <ion-toggle :checked="project?.shared" @ionChange="onToggle($event)">Make public?</ion-toggle>
                   </ion-item>
                 </ion-list>
                 <ion-button disabled expand="block" size="small" @click="navigateToMaterialManagement"
@@ -61,10 +60,8 @@ import {
   IonHeader,
   IonPage,
   IonToggle,
-  IonCardSubtitle,
   IonContent,
   IonCard,
-  IonCardHeader,
   IonList,
   IonCardContent,
   IonButton,
@@ -84,7 +81,7 @@ const route = useRoute();
 const projectsStore = useProjectsStore();
 
 const projectId = Number(route.params.projectId);
-const project = ref<Array<Project>>(projectsStore.getProjectById(projectId));
+const project = ref<Project>(projectsStore.project.find(p => p.id === projectId) ?? ({} as Project));
 
 const navigateToMaterialManagement = () => {
   router.push(`/project/${projectId}/material-management`);
@@ -95,11 +92,14 @@ const navigateToMilestones = () => {
 };
 
 const onToggle = (evt: ToggleCustomEvent) => {
-  projectsStore.shareProject(project.value);
+  if (!project.value) return;
+  return projectsStore.shareProject(project.value);
 };
 
-const updateProjectStatus = (projectId: number, status: ProjectStatus) => {
-  projectsStore.updateProjectStatus(projectId, status);
+const updateProjectStatus = (projectId: number | undefined, status: ProjectStatus) => {
+  if (projectId) {
+    projectsStore.updateProjectStatus(projectId, status);
+  }
 };
 </script>
 

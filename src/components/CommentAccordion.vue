@@ -18,20 +18,22 @@ import { onMounted, ref } from 'vue';
 import { useProjectsStore } from '@/stores/projects';
 import { IonButton, IonInput } from '@ionic/vue';
 import { Comment } from '@/models';
-import { useUserStore } from '@/stores/user';
+import useUserStore from '@/stores/user';
+import useCommentStore from '@/stores/comment';
 
 const props = defineProps<{
   projectId: number;
 }>();
 
 const projectStore = useProjectsStore();
-const comments = ref<Array<Comment>>(projectStore.comments);
+const commentStore = useCommentStore();
+const comments = ref<Array<Comment>>(projectStore.comment);
 const loading = ref(true);
 const error = ref(false);
 
 onMounted(async () => {
   try {
-    comments.value = await projectStore.fetchSharedComments(`filters[projectId][$eq]=${props.projectId}`);
+    comments.value = await commentStore.fetchSharedComments(`filters[projectId][$eq]=${props.projectId}`);
   } catch (e) {
     error.value = true;
   } finally {
@@ -54,7 +56,7 @@ const addComment = async () => {
     comments.value.push(comment);
 
     try {
-      await projectStore.addComment(comment);
+      await commentStore.addComment(comment);
       newComment.value = '';
     } catch (error) {
       comments.value.pop();

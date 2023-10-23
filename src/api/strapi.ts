@@ -3,8 +3,10 @@ import { Material, Milestone, Project } from '@/models';
 import { useAxios } from '@vueuse/integrations/useAxios';
 import User from '@/models/User';
 
+export const BASE_URL = 'https://pixeltronic.info';
+
 const instance = axios.create({
-  baseURL: 'https://pixeltronic.info',
+  baseURL: BASE_URL,
 });
 
 const executeRequest = async (endpoint: string, method: 'GET' | 'POST' | 'PUT', data?: any) => {
@@ -25,7 +27,7 @@ export const strapiGetProjects = (filter?: string) =>
 export const strapiUpdateProject = (project: Project) => executeRequest(`/projects/${project.id}`, 'PUT', project);
 
 export const strapiGetComments = async (filter?: string) =>
-  executeRequest(filter ? `/comments?${filter}&populate=*` : '/comments?populate=*');
+  executeRequest(filter ? `/comments?${filter}&populate=*` : '/comments?populate=*', 'GET');
 export const strapiAddComment = async (comment: Comment) => executeRequest('/comments', 'POST', comment);
 
 export const strapiGetMilestones = (filter?: string) =>
@@ -58,4 +60,19 @@ export const strapiAuthLogin = async (userData: User) => {
       password: userData.password,
     },
   });
+};
+
+export const strapiUploadImage = async (formData: FormData) => {
+  try {
+    const response = await axios.post('https://pixeltronic.info/strapi/api/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    if (response.data && response.status === 200) {
+      return response.data[0];
+    }
+  } catch (error) {
+    console.error('Error uploading the file:', error);
+  }
 };
