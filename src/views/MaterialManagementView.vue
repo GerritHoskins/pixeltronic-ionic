@@ -27,13 +27,13 @@
 
       <ion-button @click="addMaterial">Add</ion-button>
 
-      <ion-grid>
+      <!--  <ion-grid>
         <ion-row>
           <ion-col size="6" :key="photo.filepath" v-for="photo in photos">
             <ion-img :src="photo.webviewPath" @click="showActionSheet(photo)"></ion-img>
           </ion-col>
         </ion-row>
-      </ion-grid>
+      </ion-grid> -->
     </ion-content>
   </ion-page>
 </template>
@@ -50,10 +50,6 @@ import {
   IonItem,
   IonButtons,
   IonButton,
-  IonCol,
-  IonGrid,
-  IonImg,
-  IonRow,
   actionSheetController,
 } from '@ionic/vue';
 import { Material } from '@/models';
