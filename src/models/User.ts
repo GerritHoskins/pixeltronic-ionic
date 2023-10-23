@@ -3,7 +3,7 @@ export default interface User {
   jwt: string;
 }
 
-type UserType = {
+export type UserType = {
   username: string;
   email: string;
   password: string;

@@ -1,13 +1,13 @@
 import { defineStore } from 'pinia';
 import { strapiAuthLogin, strapiAuthRegister } from '@/api/strapi';
-import User from '@/models/User';
+import User, { UserType } from '@/models/User';
 import { Preferences } from '@capacitor/preferences';
 import router from '@/router';
 
 const useUserStore = defineStore('user', {
   state: (): User => ({
-    user: JSON.parse(window.localStorage.getItem('CapacitorStorage.userData') ?? '') ?? null,
-    jwt: window.localStorage.getItem('CapacitorStorage.jwt') ?? '',
+    user: {} as UserType,
+    jwt: '',
   }),
 
   getters: {

@@ -23,7 +23,6 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { useProjectsStore } from '@/stores/projects';
 import { IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonList, IonPage } from '@ionic/vue';
 import { useRoute } from 'vue-router';
 import { uniqueId } from '@/utils/uniqueId';

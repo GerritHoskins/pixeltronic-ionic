@@ -14,7 +14,7 @@
             <ion-card-header>
               <ion-card-title
                 >Your milestone progress so far
-                <span v-if="projectId"> ({{ filteredMilestones.completed.length }}/{{ milestones.length }}) </span>
+                <span v-if="projectId"> ({{ completedMilestones.length }}/{{ milestones.length }}) </span>
               </ion-card-title>
               <ion-card-subtitle>
                 <ion-progress-bar :value="progressValue" :color="progressColor"></ion-progress-bar>
@@ -29,15 +29,17 @@
           <ion-row>
             <ion-col size="12" size-md="6" size-lg="6" v-for="(value, key) in MilestoneStatus" :key="key">
               <ion-item-divider
-                v-if="filteredMilestones[mapStatusToArrayKey(value)].length > 0"
+                v-if="milestones.length > 0"
                 :color="value === MilestoneStatus.COMPLETED ? ProgressColor.SUCCESS : ProgressColor.DEFAULT"
                 :class="{ 'text-color-white ': value === MilestoneStatus.COMPLETED }"
                 class="text-bolder"
               >
                 <ion-label>{{ mapStatusToLabel(value) }}</ion-label>
               </ion-item-divider>
-              <ion-item v-for="milestone in filteredMilestones[mapStatusToArrayKey(value)]" :key="milestone.id">
-                {{ milestone.name }}
+              <ion-item v-for="milestone in milestones" :key="milestone.id">
+                <template v-if="milestone.status === value">
+                  {{ milestone.name }}
+                </template>
               </ion-item>
             </ion-col>
           </ion-row>
@@ -81,25 +83,19 @@ const milestones = computed(() => {
   return milestoneStore.milestone.filter(m => m.projectId === projectId.value);
 });
 
-const filteredMilestones = computed(() => {
-  const group = {
-    inProgress: [] as Milestone[],
-    notStarted: [] as Milestone[],
-    completed: [] as Milestone[],
-  };
+const completedMilestones = computed(() => {
+  const completed: Milestone[] = [];
 
-  if (!projectId.value) return group;
+  if (!projectId.value) return completed;
   if (milestones.value)
-    milestones.value?.forEach(milestone => {
-      if (milestone.status === MilestoneStatus.COMPLETED) group.completed.push(milestone);
-      else if (milestone.status === MilestoneStatus.IN_PROGRESS) group.inProgress.push(milestone);
-      else group.notStarted.push(milestone);
+    milestones.value?.filter(milestone => {
+      if (milestone.status === MilestoneStatus.COMPLETED) completed.push(milestone);
     });
 
-  return group;
+  return completed;
 });
 
-const progressValue = computed(() => filteredMilestones.value.completed.length / milestones.value?.length);
+const progressValue = computed(() => completedMilestones.value.length / milestones.value?.length);
 const progressColor = computed(() => {
   if (progressValue.value === 0) return ProgressColor.DEFAULT;
   return progressValue.value > 70
@@ -118,12 +114,6 @@ const mapStatusToLabel = (status: MilestoneStatus) => {
   if (status === MilestoneStatus.COMPLETED) return 'Completed Milestones';
   if (status === MilestoneStatus.IN_PROGRESS) return 'Milestones In Progress';
   return 'Not yet started Milestones';
-};
-
-const mapStatusToArrayKey = (status: MilestoneStatus) => {
-  if (status === MilestoneStatus.COMPLETED) return 'completed';
-  if (status === MilestoneStatus.IN_PROGRESS) return 'inProgress';
-  return 'notStarted';
 };
 </script>
 
