@@ -38,41 +38,45 @@ export const useProjectsStore = defineStore('project', {
 
   actions: {
     async initialize() {
-      this.initialized = false;
+      try {
+        this.initialized = false;
 
-      const userStore = useUserStore();
-      const commentStore = useCommentStore();
-      const milestoneStore = useMilestoneStore();
+        const userStore = useUserStore();
+        const commentStore = useCommentStore();
+        const milestoneStore = useMilestoneStore();
 
-      const { result } = useAsyncQueue([
-        this.fetchProjects,
-        userStore.syncUser,
-        commentStore.fetchComments,
-        milestoneStore.fetchMilestones,
-      ]);
+        const { result } = useAsyncQueue([
+          this.fetchProjects,
+          userStore.syncUser,
+          commentStore.fetchComments,
+          milestoneStore.fetchMilestones,
+        ]);
 
-      if (result) {
+        if (result) {
+          this.initialized = true;
+        }
         this.initialized = true;
+      } catch (error) {
+        console.error('Initialization failed: ', error);
       }
     },
 
-    async fetchProjects() {
+    async fetchDataAndMap(apiMethod: any, mapperKey: string) {
       const { mapper } = useApiResponseMapper();
-      const response = await strapiGetProjects();
-      this.project = await mapper(response, 'project');
-      return [...this.project];
+      const response = await apiMethod();
+      return await mapper(response, mapperKey);
+    },
+
+    async fetchProjects() {
+      this.project = await this.fetchDataAndMap(strapiGetProjects, 'project');
     },
 
     async fetchSharedProjects(filter: string) {
-      const { mapper } = useApiResponseMapper();
-      const response = await strapiGetProjects(filter);
-      return mapper(response, 'project');
+      return this.fetchDataAndMap(() => strapiGetProjects(filter), 'project');
     },
 
     async fetchMaterials() {
-      const { mapper } = useApiResponseMapper();
-      const response = await strapiGetMaterials();
-      this.material = mapper(response, 'material');
+      this.material = await this.fetchDataAndMap(strapiGetMaterials, 'material');
     },
 
     setSelectedProjectId(projectId: number) {

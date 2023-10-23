@@ -9,6 +9,18 @@ const instance = axios.create({
   baseURL: BASE_URL,
 });
 
+export const setRequestInterceptor = (jwt: string) => {
+  instance.interceptors.request.use(
+    config => {
+      config.headers.Authorization = `Bearer ${jwt}`;
+      return config;
+    },
+    error => {
+      return Promise.reject(error);
+    }
+  );
+};
+
 const executeRequest = async (endpoint: string, method: 'GET' | 'POST' | 'PUT', data?: any) => {
   const options = { method, data: { data } };
 
@@ -39,14 +51,14 @@ export const strapiUpdateMilestone = (milestone: Milestone) =>
 export const strapiGetMaterials = () => executeRequest('/materials', 'GET');
 export const strapiAddMaterials = (material: Material) => executeRequest('/materials', 'POST', material);
 
-export const strapiAuthRegister = async (user: User) => {
+export const strapiAuthRegister = async (userData: User) => {
   return useAxios('https://pixeltronic.info/strapi/api/auth/local/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     data: {
-      username: user.username,
-      email: user.email,
-      password: user.password,
+      username: userData.user.username,
+      email: userData.user.email,
+      password: userData.user.password,
     },
   });
 };
@@ -56,8 +68,8 @@ export const strapiAuthLogin = async (userData: User) => {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     data: {
-      identifier: userData.email,
-      password: userData.password,
+      identifier: userData.user.email,
+      password: userData.user.password,
     },
   });
 };

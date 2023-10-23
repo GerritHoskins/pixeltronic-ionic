@@ -1,6 +1,6 @@
 <template>
   <ion-item>
-    <ion-input type="file" @change="handleFileChange" id="fileInput" name="fileInput" ref="fileInput"></ion-input>
+    <ion-input type="file" @change="handleFileChange" id="file" name="file" ref="file" />
   </ion-item>
   <ion-button @click="uploadPicture">Upload</ion-button>
 </template>

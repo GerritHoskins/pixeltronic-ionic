@@ -1,5 +1,5 @@
 export default interface User {
-  user?: UserType;
+  user: UserType;
   jwt: string;
 }
 

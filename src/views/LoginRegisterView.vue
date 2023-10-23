@@ -12,13 +12,13 @@
           <ion-row>
             <ion-col size="12">
               <ion-item v-if="!isLogin">
-                <ion-input placeholder="User name" v-model="userData.user.username" type="text"></ion-input>
+                <ion-input clear-input placeholder="User name" v-model="userData.username" type="text"></ion-input>
               </ion-item>
               <ion-item>
-                <ion-input placeholder="Email" v-model="userData.user.email" type="email"></ion-input>
+                <ion-input clear-input placeholder="Email" v-model="userData.email" type="email"></ion-input>
               </ion-item>
-              <ion-item>
-                <ion-input placeholder="Password" v-model="userData.user.password" type="password"></ion-input>
+              <ion-item class="ion-margin-top">
+                <ion-input clear-input placeholder="Password" v-model="userData.password" type="password"></ion-input>
               </ion-item>
               <ion-button
                 class="ion-margin-top"
@@ -54,14 +54,16 @@ import {
   IonButton,
   IonCol,
 } from '@ionic/vue';
-import User, { UserType } from '@/models/User';
+import { UserType } from '@/models/User';
 import { useRouter } from 'vue-router';
 import useUserStore from '@/stores/user';
 
 const isLogin = ref(true);
 
-const userData = reactive<User>({
-  user: {} as UserType,
+const userData = reactive({
+  username: '',
+  email: '',
+  password: '',
   jwt: '',
 });
 
@@ -70,8 +72,8 @@ const store = useUserStore();
 const loginUser = async () => {
   const user: UserType = {
     username: (userData?.username as string) || '',
-    email: (userData.email as string) || '',
-    password: (userData.password as string) || '',
+    email: (userData?.email as string) || '',
+    password: (userData?.password as string) || '',
   };
   await store.login({ user, jwt: userData.jwt });
   await router.push('/project-list');
@@ -80,8 +82,8 @@ const loginUser = async () => {
 const registerUser = async () => {
   const user: UserType = {
     username: (userData?.username as string) || '',
-    email: (userData.email as string) || '',
-    password: (userData.password as string) || '',
+    email: (userData?.email as string) || '',
+    password: (userData?.password as string) || '',
   };
   await store.register({ user, jwt: userData.jwt });
   isLogin.value = false;
