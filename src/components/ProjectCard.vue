@@ -6,11 +6,13 @@
           <ion-col size="12" size-md="6" size-lg="6">
             <ion-card-header class="ion-padding">
               <ion-card-title>{{ project?.name }}</ion-card-title>
-              <ion-card-subtitle>By: {{ userName }}</ion-card-subtitle>
-              <ion-img class="ion-padding-top" :alt="project?.name" :src="project?.image?.url" />
-              <ion-badge :color="project.status === Status.Completed ? 'success' : 'medium'">{{
-                project.status
-              }}</ion-badge>
+              <ion-card-subtitle>By: {{ project?.user }}</ion-card-subtitle>
+              <ion-img
+                class="ion-padding-top"
+                :alt="project?.name"
+                :src="project?.image?.url ?? 'https://pixeltronic.info/strapi//uploads/code_5290465_640_34bc1fc40d.jpg'"
+              />
+              <ion-badge :color="progressColor(project.status)">{{ project.status }}</ion-badge>
             </ion-card-header>
           </ion-col>
           <ion-col size="12" size-md="6" size-lg="6">
@@ -41,32 +43,37 @@
 import ShareButton from '@/components/ShareButton.vue';
 import CommentAccordion from '@/components/CommentAccordion.vue';
 import {
-  IonBadge,
-  IonImg,
-  IonText,
-  IonItem,
-  IonCardHeader,
-  IonCardTitle,
-  IonCard,
   IonAccordion,
-  IonLabel,
   IonAccordionGroup,
+  IonBadge,
+  IonCard,
   IonCardContent,
-  IonGrid,
+  IonCardHeader,
   IonCardSubtitle,
-  IonRow,
+  IonCardTitle,
   IonCol,
+  IonGrid,
+  IonImg,
+  IonItem,
+  IonLabel,
+  IonRow,
+  IonText,
 } from '@ionic/vue';
-import { Status } from '@/models/Project';
+import { ProjectStatus } from '@/models/Project';
 import { useUserStore } from '@/stores/user';
-import { asyncComputed } from '@vueuse/core';
+import { ProgressColor } from '@/models/ProgressColor';
 
 defineProps({
   project: Object,
 });
 
-const userStore = useUserStore();
-const userName = asyncComputed(async () => await userStore.userName());
+const progressColor = (status: ProjectStatus) => {
+  return status === ProjectStatus.COMPLETED
+    ? ProgressColor.SUCCESS
+    : status === ProjectStatus.IN_PROGRESS
+    ? ProgressColor.WARNING
+    : ProgressColor.DEFAULT;
+};
 </script>
 
 <style scoped>

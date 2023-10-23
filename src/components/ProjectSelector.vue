@@ -1,7 +1,7 @@
 <template>
   <ion-list>
     <ion-item>
-      <ion-select label="Selected Project" placeholder="Project" @ionChange="changeProjectId($event)">
+      <ion-select label="Select a Project" placeholder="Project" @ionChange="changeProjectId($event)">
         <ion-select-option v-for="project in props.projects" :key="project.id" :value="project.id">{{
           project.name
         }}</ion-select-option>

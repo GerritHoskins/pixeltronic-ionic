@@ -8,32 +8,36 @@
       <ion-card>
         <ion-grid>
           <ion-row>
-            <ion-col size="12">
+            <ion-col size="12" size-md="6" size-lg="6">
               <project-selector @update-project-id="setId($event)" :projects="projectStore.projects || []" />
             </ion-col>
-            <ion-col size="12">
+            <ion-col size="12" size-md="6" size-lg="6">
               <ion-card-header>
                 <ion-card-title
-                  >Your milestone progress so far ({{ filteredMilestones.completed.length }}/{{
-                    milestones.length
-                  }})</ion-card-title
-                >
+                  >Your milestone progress so far
+                  <span v-if="projectId"> ({{ filteredMilestones.completed.length }}/{{ milestones.length }}) </span>
+                </ion-card-title>
                 <ion-card-subtitle>
-                  <ion-progress-bar :value="progressValue" color="success"></ion-progress-bar>
+                  <ion-progress-bar :value="progressValue" :color="progressColor"></ion-progress-bar>
                 </ion-card-subtitle>
               </ion-card-header>
             </ion-col>
           </ion-row>
         </ion-grid>
         <ion-card-content>
-          <ion-item-group color="primary">
+          <ion-item-group>
             <ion-grid>
               <ion-row>
-                <ion-col size="12" size-md="6" size-lg="6" v-for="status in ['completed', 'inProgress']" :key="status">
-                  <ion-item-divider :color="status === 'completed' ? 'success' : 'medium'">
-                    <ion-label>{{ mapStatusToLabel(status) }}</ion-label>
+                <ion-col size="12" size-md="6" size-lg="6" v-for="(value, key) in MilestoneStatus" :key="key">
+                  <ion-item-divider
+                    v-if="filteredMilestones[mapStatusToArrayKey(value)].length > 0"
+                    :color="value === MilestoneStatus.COMPLETED ? ProgressColor.SUCCESS : ProgressColor.DEFAULT"
+                    :class="{ 'text-color-white ': value === MilestoneStatus.COMPLETED }"
+                    class="text-bolder"
+                  >
+                    <ion-label>{{ mapStatusToLabel(value) }}</ion-label>
                   </ion-item-divider>
-                  <ion-item v-for="milestone in filteredMilestones[status]" :key="milestone.id">
+                  <ion-item v-for="milestone in filteredMilestones[mapStatusToArrayKey(value)]" :key="milestone.id">
                     {{ milestone.name }}
                   </ion-item>
                 </ion-col>
@@ -47,43 +51,47 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 import {
-  IonLabel,
-  IonHeader,
-  IonPage,
   IonCard,
   IonCardContent,
-  IonItemGroup,
-  IonItemDivider,
-  IonContent,
-  IonItem,
   IonCardHeader,
-  IonGrid,
-  IonRow,
-  IonCol,
   IonCardSubtitle,
   IonCardTitle,
+  IonCol,
+  IonContent,
+  IonGrid,
+  IonHeader,
+  IonItem,
+  IonItemDivider,
+  IonItemGroup,
+  IonLabel,
+  IonPage,
   IonProgressBar,
+  IonRow,
 } from '@ionic/vue';
 import { useProjectsStore } from '@/stores/projects';
-import { Status } from '@/models/Milestone';
+import { MilestoneStatus } from '@/models/Milestone';
 import ToolbarNav from '@/components/ToolbarNav.vue';
 import ProjectSelector from '@/components/ProjectSelector.vue';
+import { ProgressColor } from '@/models/ProgressColor';
 
 const projectStore = useProjectsStore();
+const projectId = ref();
 const milestones = ref(projectStore.milestones);
 
 const filteredMilestones = computed(() => {
   const group = {
-    completed: [],
     inProgress: [],
+    notStarted: [],
+    completed: [],
   };
 
   milestones.value.forEach(m => {
     if (projectStore.selectedProjectId == m.projectId) {
-      if (m.status === Status.Completed) group.completed.push(m);
-      else group.inProgress.push(m);
+      if (m.status === MilestoneStatus.COMPLETED) group.completed.push(m);
+      else if (m.status === MilestoneStatus.IN_PROGRESS) group.inProgress.push(m);
+      else group.notStarted.push(m);
     }
   });
 
@@ -91,16 +99,37 @@ const filteredMilestones = computed(() => {
 });
 
 const progressValue = computed(() => filteredMilestones.value.completed.length / milestones.value.length);
-
+const progressColor = computed(() => {
+  if (progressValue.value === 0) return ProgressColor.DEFAULT;
+  return progressValue.value > 70
+    ? ProgressColor.SUCCESS
+    : progressValue.value > 40
+    ? ProgressColor.WARNING
+    : ProgressColor.DANGER;
+});
 const setId = (id: number) => {
+  projectId.value = id;
   projectStore.selectedProjectId = id;
 };
 
-const mapStatusToLabel = (status: string) => {
-  if (status === 'completed') return 'Completed';
-  if (status === 'inProgress') return 'In Progress';
-  else return 'Not Started';
+const mapStatusToLabel = (status: MilestoneStatus) => {
+  if (status === MilestoneStatus.COMPLETED) return 'Completed Milestones';
+  if (status === MilestoneStatus.IN_PROGRESS) return 'Milestones In Progress';
+  return 'Not yet started Milestones';
+};
+
+const mapStatusToArrayKey = (status: MilestoneStatus) => {
+  if (status === MilestoneStatus.COMPLETED) return 'completed';
+  if (status === MilestoneStatus.IN_PROGRESS) return 'inProgress';
+  return 'notStarted';
 };
 </script>
-<script setup lang="ts"></script>
-<script setup lang="ts"></script>
+
+<style scoped>
+.text-color-white {
+  color: #ffffff;
+}
+.text-bolder {
+  font-weight: 500;
+}
+</style>

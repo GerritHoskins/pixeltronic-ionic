@@ -85,9 +85,11 @@ const registerUser = async () => {
     password: userData.password,
   };
   await store.register(user);
+  isLogin.value = false;
   await router.push('/login-register');
 };
 </script>
+
 <style scoped>
 .custom-content {
   width: 100%;

@@ -7,8 +7,8 @@ import router from '@/router';
 
 export const useUserStore = defineStore('user', {
   state: (): State => ({
-    user: null,
-    jwt: '',
+    user: JSON.parse(window.localStorage.getItem('CapacitorStorage.userData')) ?? null,
+    jwt: window.localStorage.getItem('CapacitorStorage.jwt') ?? '',
   }),
 
   getters: {
@@ -22,8 +22,8 @@ export const useUserStore = defineStore('user', {
     async login(userData: User) {
       const result = await strapiAuthLogin(userData);
       const { jwt, user } = result.data.value;
-      this.user = user;
-      this.jwt = jwt;
+      this.$state.user = user;
+      this.$state.jwt = jwt;
 
       //persist
       await Preferences.set({
@@ -43,8 +43,8 @@ export const useUserStore = defineStore('user', {
 
     async logout() {
       await Preferences.clear();
-      this.user = null;
-      this.jwt = '';
+      this.$state.user = null;
+      this.$state.jwt = '';
       await router.push('/login-register');
     },
   },

@@ -27,9 +27,10 @@ import { useProjectsStore } from '@/stores/projects';
 import { IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonList, IonPage } from '@ionic/vue';
 import { useRoute } from 'vue-router';
 import { uniqueId } from '@/utils/uniqueId';
-import Milestone, { Status } from '@/models/Milestone';
+import Milestone, { MilestoneStatus } from '@/models/Milestone';
 import { strapiGetMilestones } from '@/api/strapi';
 import ToolbarNav from '@/components/ToolbarNav.vue';
+import { ProgressColor } from '@/models/ProgressColor';
 
 const route = useRoute();
 
@@ -53,11 +54,12 @@ onMounted(async () => {
 
 const addMilestone = async () => {
   if (newMilestoneName.value) {
-    const milestone = {
+    const milestone: Milestone = {
       id: uniqueId(),
       projectId,
       name: newMilestoneName.value,
-      status: Status.InProgress,
+      status: MilestoneStatus.IN_PROGRESS,
+      statusColor: ProgressColor.WARNING,
     };
     await projectsStore.addMilestone(milestone);
     newMilestoneName.value = '';
@@ -66,7 +68,7 @@ const addMilestone = async () => {
   }
 };
 
-const markAsCompleted = (milestoneId: number, status: Status) => {
+const markAsCompleted = (milestoneId: number, status: MilestoneStatus) => {
   projectsStore.markMilestoneAsCompleted(milestoneId, status);
 };
 </script>

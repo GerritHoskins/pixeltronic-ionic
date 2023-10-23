@@ -1,22 +1,18 @@
+import { ProgressColor } from '@/models/ProgressColor';
+
 export default interface Milestone {
   id?: number;
   projectId?: number;
   name?: string;
   description?: string;
   targetCompletionDate?: Date;
-  status: Status;
+  status: MilestoneStatus;
+  statusColor?: ProgressColor;
   completedMilestones?: number[];
 }
 
-export enum Status {
-  NotStarted = 'Not Started',
-  InProgress = 'In Progress',
-  Completed = 'Completed',
-  Removed = 'Removed',
-}
-
-export enum ProgressColor {
-  DANGER = 'danger',
-  WARNING = 'warning',
-  SUCCESS = 'success',
+export enum MilestoneStatus {
+  COMPLETED = 'Completed',
+  IN_PROGRESS = 'In Progress',
+  NOT_STARTED = 'Not Started',
 }

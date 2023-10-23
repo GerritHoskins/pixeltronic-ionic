@@ -13,7 +13,10 @@
           <ion-grid>
             <ion-row>
               <ion-col size="12" size-md="6" size-lg="6">
-                <img :alt="project.name" :src="project.image.url" />
+                <img
+                  :alt="project.name"
+                  :src="project.image.url ?? 'https://pixeltronic.info/strapi//uploads/code_5290465_640_34bc1fc40d.jpg'"
+                />
               </ion-col>
               <ion-col size="12" size-md="6" size-lg="6">
                 <p>{{ project.description }}</p>
@@ -37,7 +40,7 @@
                     <ion-toggle :checked="project.shared" @ionChange="onToggle($event)">Make public?</ion-toggle>
                   </ion-item>
                 </ion-list>
-                <ion-button expand="block" size="small" @click="navigateToMaterialManagement"
+                <ion-button disabled expand="block" size="small" @click="navigateToMaterialManagement"
                   >Manage Materials</ion-button
                 >
                 <ion-button expand="block" size="small" @click="navigateToMilestones">Milestones</ion-button>
@@ -73,7 +76,7 @@ import {
   IonRow,
   IonCol,
 } from '@ionic/vue';
-import Project, { Status } from '@/models/Project';
+import Project, { ProjectStatus } from '@/models/Project';
 import ToolbarNav from '@/components/ToolbarNav.vue';
 
 const router = useRouter();
@@ -95,7 +98,7 @@ const onToggle = (evt: ToggleCustomEvent) => {
   projectsStore.shareProject(project.value);
 };
 
-const updateProjectStatus = (projectId: number, status: Status) => {
+const updateProjectStatus = (projectId: number, status: ProjectStatus) => {
   projectsStore.updateProjectStatus(projectId, status);
 };
 </script>

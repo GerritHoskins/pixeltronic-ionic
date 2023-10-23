@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Milestone, Project, Material, Comment, State } from '@/models';
+import { Comment, Material, Milestone, Project, State } from '@/models';
 import {
   strapiAddComment,
   strapiAddMaterials,
@@ -12,8 +12,10 @@ import {
   strapiUpdateMilestone,
   strapiUpdateProject,
 } from '@/api/strapi';
-import { Status } from '@/models/Milestone';
-import { Status } from '@/models/Project';
+import { MilestoneStatus } from '@/models/Milestone';
+import { ProjectStatus } from '@/models/Project';
+import { ProgressColor } from '@/models/ProgressColor';
+import { useUserStore } from '@/stores/user';
 
 export const useProjectsStore = defineStore('projects', {
   state: (): State => ({
@@ -38,8 +40,9 @@ export const useProjectsStore = defineStore('projects', {
       return state.projects.find(p => Number(p.id) === projectId);
     },
 
-    getSharedProjects: state => () => {
-      return state.projects.filter(p => p.shared);
+    getUserProjects: state => () => {
+      const userStore = useUserStore();
+      return state.projects.filter(p => p.user === userStore.user.username);
     },
   },
 
@@ -100,16 +103,25 @@ export const useProjectsStore = defineStore('projects', {
       this.comments.push(comment);
     },
 
-    async updateProjectStatus(projectId: number, status: Status) {
+    async updateProjectStatus(projectId: number, status: ProjectStatus) {
       const project = this.projects.find(p => p.id === projectId);
-      if (project) project.status = status;
+      if (project) {
+        project.status = status ?? ProjectStatus.NOT_STARTED;
+        project.statusColor =
+          status === ProjectStatus.COMPLETED
+            ? ProgressColor.SUCCESS
+            : status === ProjectStatus.IN_PROGRESS
+            ? ProgressColor.WARNING
+            : ProgressColor.DEFAULT;
+      }
       await strapiUpdateProject(project);
     },
 
     async markMilestoneAsCompleted(milestoneId: number) {
       const milestoneIndex = this.milestones.findIndex(m => m.id === milestoneId);
       if (milestoneIndex !== -1) {
-        this.milestones[milestoneIndex].status = Status.Completed;
+        this.milestones[milestoneIndex].status = MilestoneStatus.COMPLETED;
+        this.milestones[milestoneIndex].statusColor = ProgressColor.SUCCESS;
       }
 
       await strapiUpdateMilestone(this.milestones[milestoneIndex]);
@@ -129,7 +141,7 @@ export const useProjectsStore = defineStore('projects', {
       return responseData.map(({ id, attributes }) => {
         switch (structure) {
           case 'projects': {
-            const { name, description, startDate, endDate, status, image, shared } = attributes;
+            const { name, description, startDate, endDate, user, status, statusColor, image, shared } = attributes;
             const imageUrl = image.data?.attributes.url;
             return {
               id,
@@ -137,7 +149,9 @@ export const useProjectsStore = defineStore('projects', {
               description,
               startDate,
               endDate,
+              user,
               status,
+              statusColor,
               image: {
                 url: imageUrl ? `https://pixeltronic.info/strapi/${imageUrl}` : null,
                 alternativeText: image.data?.attributes.alternativeText ?? '',
@@ -157,12 +171,13 @@ export const useProjectsStore = defineStore('projects', {
             };
           }
           case 'milestones': {
-            const { projectId: milestoneProjectId, name, status } = attributes;
+            const { projectId: milestoneProjectId, name, status, statusColor } = attributes;
             return {
               id,
               projectId: milestoneProjectId,
               name,
               status,
+              statusColor,
             };
           }
           case 'materials': {

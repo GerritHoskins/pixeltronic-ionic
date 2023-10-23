@@ -21,7 +21,7 @@
           </ion-col>
           <ion-col size="12" size-md="6" size-lg="3">
             <ion-item>
-              <ion-datetime clear-input @on-ion-change="formatDate(project.startDate)"></ion-datetime>
+              <ion-datetime clear-input @on-ion-change="formatDate(project.endDate)"></ion-datetime>
             </ion-item>
           </ion-col>
           <ion-col size="12">
@@ -51,15 +51,23 @@ import { useProjectsStore } from '@/stores/projects';
 import { ref } from 'vue';
 import { Project } from '@/models';
 import { uniqueId } from '@/utils/uniqueId';
+import { useUserStore } from '@/stores/user';
+import router from '@/router';
 
 const projectsStore = useProjectsStore();
+const userStore = useUserStore();
 
 const project = ref<Project>({
   id: uniqueId(),
   name: '',
   description: '',
   startDate: new Date(),
+  endDate: new Date(),
+  user: userStore.user.username ?? '',
 });
 
-const addProject = () => projectsStore.addProject(project.value);
+const addProject = () => {
+  projectsStore.addProject(project.value);
+  router.push('/project-list');
+};
 </script>

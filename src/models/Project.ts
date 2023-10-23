@@ -1,11 +1,15 @@
+import { ProgressColor } from '@/models/ProgressColor';
+
 export default interface Project {
   id: number;
   name: string;
   description: string;
   startDate: Date;
   endDate?: Date;
+  user?: string;
   image?: ImageAttributes;
-  status?: Status;
+  status?: ProjectStatus;
+  statusColor?: ProgressColor;
   comments?: number[];
   shared?: boolean;
 }
@@ -16,8 +20,8 @@ interface ImageAttributes {
   caption: string;
 }
 
-export enum Status {
-  NotStarted = 'Not Started',
-  InProgress = 'In Progress',
-  Completed = 'Completed',
+export enum ProjectStatus {
+  NOT_STARTED = 'Not Started',
+  IN_PROGRESS = 'In Progress',
+  COMPLETED = 'Completed',
 }
