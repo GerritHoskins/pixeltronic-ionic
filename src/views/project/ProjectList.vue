@@ -1,8 +1,5 @@
 <template>
   <ion-page>
-    <ion-header>
-      <toolbar-nav title="My projects" />
-    </ion-header>
     <ion-content>
       <ion-grid>
         <ion-row>
@@ -18,7 +15,7 @@
                     :key="project.id"
                     button
                     :detail="false"
-                    :router-link="`/project/${project.id}`"
+                    :router-link="{ name: 'ProjectDetails', params: { projectId: project.id } }"
                   >
                     <ion-badge slot="end" :color="project.statusColor">{{ project.status }}</ion-badge>
                     <ion-label> {{ project.name }} </ion-label>
@@ -30,7 +27,7 @@
           <ion-col size="12" size-md="6" size-lg="6">
             <ion-card>
               <ion-card-header>
-                <ion-card-title>Profile information: </ion-card-title>
+                <ion-card-title>Your profile:</ion-card-title>
               </ion-card-header>
               <ion-card-content>
                 <ion-list v-if="userStore.user">
@@ -42,12 +39,6 @@
           </ion-col>
         </ion-row>
       </ion-grid>
-
-      <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-        <ion-fab-button @click="router.push('/add-project')">
-          <ion-icon :icon="add"></ion-icon>
-        </ion-fab-button>
-      </ion-fab>
     </ion-content>
   </ion-page>
 </template>
@@ -55,18 +46,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useProjectsStore } from '@/stores/projects';
-import { useRouter } from 'vue-router';
-import { add } from 'ionicons/icons';
 import {
   IonBadge,
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
   IonContent,
-  IonFab,
-  IonFabButton,
-  IonHeader,
-  IonIcon,
   IonItem,
   IonLabel,
   IonList,
@@ -75,12 +60,15 @@ import {
   IonRow,
   IonCol,
   IonPage,
+  onIonViewWillEnter,
 } from '@ionic/vue';
-import ToolbarNav from '@/components/ToolbarNav.vue';
 import useUserStore from '@/stores/user';
 
-const router = useRouter();
-const projectsStore = useProjectsStore();
+const store = useProjectsStore();
+const projects = ref();
 const userStore = useUserStore();
-const projects = ref(projectsStore.getUserProjects());
+
+onIonViewWillEnter(async () => {
+  projects.value = await store.getUserProjects();
+});
 </script>

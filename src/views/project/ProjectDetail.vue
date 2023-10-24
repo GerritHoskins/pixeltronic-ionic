@@ -1,28 +1,27 @@
 <template>
   <ion-page>
-    <ion-header>
-      <toolbar-nav :title="`Project: ${project?.name}`" />
-    </ion-header>
-
-    <ion-content fullscreen class="ion-padding">
-      <ion-card>
-        <ion-card-content>
-          <ion-grid>
-            <ion-row>
-              <ion-col size="12" size-md="6" size-lg="6">
+    <ion-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12" size-md="6" size-lg="6">
+            <ion-card>
+              <ion-card-content>
                 <img
                   :alt="project?.name"
                   :src="
                     project?.image?.url ?? 'https://pixeltronic.info/strapi/uploads/code_5290465_640_34bc1fc40d.jpg'
                   "
                 />
-              </ion-col>
-              <ion-col size="12" size-md="6" size-lg="6">
                 <p>{{ project?.description }}</p>
-              </ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col offset="0" offset-lg="6" offset-md="6" size="12" size-md="6" size-lg="6">
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+          <ion-col size="12" size-md="6" size-lg="6">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Project settings:</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
                 <ion-list>
                   <ion-item>
                     <ion-select
@@ -43,11 +42,11 @@
                   >Manage Materials</ion-button
                 >
                 <ion-button expand="block" size="small" @click="navigateToMilestones">Milestones</ion-button>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </ion-card-content>
-      </ion-card>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </ion-content>
   </ion-page>
 </template>
@@ -57,7 +56,6 @@ import { ref } from 'vue';
 import { useProjectsStore } from '@/stores/projects';
 import { useRouter, useRoute } from 'vue-router';
 import {
-  IonHeader,
   IonPage,
   IonToggle,
   IonContent,
@@ -72,9 +70,10 @@ import {
   IonGrid,
   IonRow,
   IonCol,
+  IonCardHeader,
+  IonCardTitle,
 } from '@ionic/vue';
 import Project, { ProjectStatus } from '@/models/Project';
-import ToolbarNav from '@/components/ToolbarNav.vue';
 
 const router = useRouter();
 const route = useRoute();

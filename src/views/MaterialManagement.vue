@@ -5,12 +5,12 @@
     </ion-header>
 
     <ion-content fullscreen class="ion-padding">
-      <project-selector @update-project-id="projectId = $event" :projects="projectStore.projects || []" />
+      <project-selector @update-project-id="projectId = $event" :projects="projectStore.project || []" />
       <ion-list>
         <ion-item v-for="material in materials" :key="material.id">
           <ion-label>{{ material.name }}</ion-label>
           <ion-buttons slot="end">
-            <ion-button @click="editMaterial(material)">Edit</ion-button>
+            <!-- <ion-button @click="editMaterial(material)">Edit</ion-button>-->
             <ion-button @click="removeMaterial(material.id)" color="danger">Delete</ion-button>
           </ion-buttons>
         </ion-item>
@@ -50,7 +50,6 @@ import {
   IonItem,
   IonButtons,
   IonButton,
-  actionSheetController,
 } from '@ionic/vue';
 import { Material } from '@/models';
 import { useProjectsStore } from '@/stores/projects';
@@ -66,7 +65,7 @@ onMounted(loadSaved);*/
 
 const projectStore = useProjectsStore();
 const projectId = ref(projectStore.selectedProjectId);
-const materials = ref<Material[]>(projectStore.materials.filter(mat => mat.projectId === projectId.value));
+const materials = ref<Material[]>(projectStore.material.filter(mat => mat.projectId === projectId.value));
 
 const newMaterial = ref<Partial<Material>>({
   id: 0,
@@ -99,15 +98,15 @@ const addMaterial = () => {
   }
 };
 
-const editMaterial = (material: Material) => {
-  //TODO: Implement edit functionality, potentially showing a modal or another view.
-};
+//const editMaterial = (material: Material) => {
+//TODO: Implement edit functionality, potentially showing a modal or another view.
+//};
 
 const removeMaterial = (materialId: number) => {
   materials.value = materials.value.filter(m => m.id !== materialId);
 };
 
-const showActionSheet = async () => {
+/*const showActionSheet = async () => {
   const actionSheet = await actionSheetController.create({
     header: 'Photos',
     buttons: [
@@ -130,5 +129,5 @@ const showActionSheet = async () => {
     ],
   });
   await actionSheet.present();
-};
+};*/
 </script>

@@ -11,13 +11,9 @@ import { ProjectStatus } from '@/models/Project';
 import { ProgressColor } from '@/models/ProgressColor';
 import useUserStore from '@/stores/user';
 import { useApiResponseMapper } from '@/composables/useApiResponseMapper';
-import { useAsyncQueue } from '@vueuse/core';
-import useCommentStore from '@/stores/comment';
-import useMilestoneStore from '@/stores/milestone';
 
 export const useProjectsStore = defineStore('project', {
   state: (): State => ({
-    initialized: false,
     selectedProjectId: undefined,
     project: [] as Project[],
     milestone: [] as Milestone[],
@@ -37,30 +33,6 @@ export const useProjectsStore = defineStore('project', {
   },
 
   actions: {
-    async initialize() {
-      try {
-        this.initialized = false;
-
-        const userStore = useUserStore();
-        const commentStore = useCommentStore();
-        const milestoneStore = useMilestoneStore();
-
-        const { result } = useAsyncQueue([
-          this.fetchProjects,
-          userStore.syncUser,
-          commentStore.fetchComments,
-          milestoneStore.fetchMilestones,
-        ]);
-
-        if (result) {
-          this.initialized = true;
-        }
-        this.initialized = true;
-      } catch (error) {
-        console.error('Initialization failed: ', error);
-      }
-    },
-
     async fetchDataAndMap(apiMethod: any, mapperKey: string) {
       const { mapper } = useApiResponseMapper();
       const response = await apiMethod();
@@ -83,8 +55,8 @@ export const useProjectsStore = defineStore('project', {
       this.selectedProjectId = projectId;
     },
 
-    async addProject(project: Project) {
-      await strapiAddProject(project);
+    async addProject(formData: FormData, project: Project) {
+      await strapiAddProject(formData);
       this.project?.push(project);
     },
 

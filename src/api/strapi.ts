@@ -21,8 +21,16 @@ export const setRequestInterceptor = (jwt: string) => {
   );
 };
 
-const executeRequest = async (endpoint: string, method: 'GET' | 'POST' | 'PUT', data?: any) => {
-  const options = { method, data: { data } };
+const executeRequest = async (endpoint: string, method: 'GET' | 'POST' | 'PUT', data?: any, formData?: boolean) => {
+  const options = formData
+    ? {
+        method,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        data: data,
+      }
+    : { method, data: { data } };
 
   try {
     const { data: responseData } = await useAxios(`/strapi/api${endpoint}`, options, instance);
@@ -33,7 +41,7 @@ const executeRequest = async (endpoint: string, method: 'GET' | 'POST' | 'PUT', 
   }
 };
 
-export const strapiAddProject = (project: Project) => executeRequest('/projects', 'POST', project);
+export const strapiAddProject = (project: FormData) => executeRequest('/projects', 'POST', project, true);
 export const strapiGetProjects = (filter?: string) =>
   executeRequest(filter ? `/projects?${filter}&populate=*` : '/projects?&populate=*', 'GET');
 export const strapiUpdateProject = (project: Project) => executeRequest(`/projects/${project.id}`, 'PUT', project);

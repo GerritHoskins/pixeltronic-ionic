@@ -76,7 +76,7 @@ const loginUser = async () => {
     password: (userData?.password as string) || '',
   };
   await store.login({ user, jwt: userData.jwt });
-  await router.push('/project-list');
+  await router.push('/project');
 };
 
 const registerUser = async () => {

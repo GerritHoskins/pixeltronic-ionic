@@ -3,7 +3,7 @@
     <ion-tabs>
       <ion-router-outlet></ion-router-outlet>
       <ion-tab-bar slot="bottom">
-        <ion-tab-button tab="ProjectsListView" href="/project-list">
+        <ion-tab-button tab="Project" href="/project/list">
           <ion-icon aria-hidden="true" :icon="square" />
           <ion-label>Home</ion-label>
         </ion-tab-button>

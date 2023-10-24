@@ -5,46 +5,50 @@
     </ion-header>
 
     <ion-content fullscreen class="ion-padding">
-      <ion-grid>
-        <ion-row>
-          <ion-col size="12" size-md="6" size-lg="6">
-            <project-selector @update-project-id="setId($event)" :projects="projectStore.getUserProjects() || []" />
-          </ion-col>
-          <ion-col size="12" size-md="6" size-lg="6">
-            <ion-card-header>
-              <ion-card-title
-                >Your milestone progress so far
-                <span v-if="projectId"> ({{ completedMilestones.length }}/{{ milestones.length }}) </span>
-              </ion-card-title>
-              <ion-card-subtitle>
-                <ion-progress-bar :value="progressValue" :color="progressColor"></ion-progress-bar>
-              </ion-card-subtitle>
-            </ion-card-header>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+      <ion-card>
+        <ion-card-content>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="12" size-md="6" size-lg="6">
+                <project-selector @update-project-id="setId($event)" :projects="projectStore.getUserProjects() || []" />
+              </ion-col>
+              <ion-col size="12" size-md="6" size-lg="6">
+                <ion-card-header>
+                  <ion-card-title
+                    >Your milestone progress so far
+                    <span v-if="projectId"> ({{ completedMilestones.length }}/{{ milestones.length }}) </span>
+                  </ion-card-title>
+                  <ion-card-subtitle>
+                    <ion-progress-bar :value="progressValue" :color="progressColor"></ion-progress-bar>
+                  </ion-card-subtitle>
+                </ion-card-header>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
 
-      <ion-item-group>
-        <ion-grid>
-          <ion-row>
-            <ion-col size="12" size-md="6" size-lg="6" v-for="(value, key) in MilestoneStatus" :key="key">
-              <ion-item-divider
-                v-if="milestones.length > 0"
-                :color="value === MilestoneStatus.COMPLETED ? ProgressColor.SUCCESS : ProgressColor.DEFAULT"
-                :class="{ 'text-color-white ': value === MilestoneStatus.COMPLETED }"
-                class="text-bolder"
-              >
-                <ion-label>{{ mapStatusToLabel(value) }}</ion-label>
-              </ion-item-divider>
-              <ion-item v-for="milestone in milestones" :key="milestone.id">
-                <template v-if="milestone.status === value">
-                  {{ milestone.name }}
-                </template>
-              </ion-item>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-item-group>
+          <ion-item-group>
+            <ion-grid>
+              <ion-row>
+                <ion-col size="12" size-md="6" size-lg="6" v-for="(value, key) in MilestoneStatus" :key="key">
+                  <ion-item-divider
+                    v-if="milestones.length > 0"
+                    :color="value === MilestoneStatus.COMPLETED ? ProgressColor.SUCCESS : ProgressColor.DEFAULT"
+                    :class="{ 'text-color-white ': value === MilestoneStatus.COMPLETED }"
+                    class="text-bolder"
+                  >
+                    <ion-label>{{ mapStatusToLabel(value) }}</ion-label>
+                  </ion-item-divider>
+                  <ion-item v-for="milestone in milestones" :key="milestone.id">
+                    <template v-if="milestone.status === value">
+                      {{ milestone.name }}
+                    </template>
+                  </ion-item>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-item-group>
+        </ion-card-content>
+      </ion-card>
     </ion-content>
   </ion-page>
 </template>
@@ -54,6 +58,8 @@ import { computed, ref } from 'vue';
 import {
   IonCardHeader,
   IonCardSubtitle,
+  IonCard,
+  IonCardContent,
   IonCardTitle,
   IonCol,
   IonContent,
