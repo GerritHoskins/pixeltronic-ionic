@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <ion-header>
-      <toolbar-nav title="Progress tracking" />
+      <toolbar-nav title="Progress tracking" show-back show-logout />
     </ion-header>
 
     <ion-content fullscreen class="ion-padding">

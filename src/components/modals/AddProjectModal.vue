@@ -2,7 +2,7 @@
   <ion-content class="ion-padding">
     <ion-modal :is-open="show" :initial-breakpoint="1" :breakpoints="[0, 1]">
       <ion-header>
-        <toolbar-nav :title="project.name" />
+        <toolbar-nav :title="project.name" show-back show-logout />
       </ion-header>
       <ion-content class="ion-padding">
         <ion-list>

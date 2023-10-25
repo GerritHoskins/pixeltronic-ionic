@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <ion-header>
-      <toolbar-nav title="Milestone Manager" />
+      <toolbar-nav title="Milestone Manager" show-back show-logout />
     </ion-header>
     <ion-content fullscreen class="ion-padding">
       <ion-list>

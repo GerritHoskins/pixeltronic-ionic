@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <ion-header>
-      <toolbar-nav title="Community Showcase" />
+      <toolbar-nav title="Community Showcase" show-back show-logout />
     </ion-header>
 
     <ion-content v-if="loading">

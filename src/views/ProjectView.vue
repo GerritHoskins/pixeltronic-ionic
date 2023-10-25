@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <ion-header>
-      <toolbar-nav title="My projects" />
+      <toolbar-nav title="My projects" show-back show-logout />
     </ion-header>
     <ion-content>
       <ion-router-outlet></ion-router-outlet>

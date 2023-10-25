@@ -1,10 +1,7 @@
 <template>
   <ion-page>
     <ion-header>
-      <ion-toolbar>
-        <ion-title v-if="isLogin">Login</ion-title>
-        <ion-title v-else>Register</ion-title>
-      </ion-toolbar>
+      <toolbar-nav :title="isLogin ? 'Login' : 'Redirect'" :show-back="false" :show-logout="false" />
     </ion-header>
     <ion-content class="ion-padding">
       <div class="custom-content">
@@ -20,17 +17,20 @@
               <ion-item class="ion-margin-top">
                 <ion-input clear-input placeholder="Password" v-model="userData.password" type="password"></ion-input>
               </ion-item>
-              <ion-button
-                class="ion-margin-top"
-                size="small"
-                expand="block"
-                @click="isLogin ? loginUser() : registerUser()"
-              >
-                {{ isLogin ? 'Login' : 'Register' }}
-              </ion-button>
-              <p @click="isLogin = !isLogin">
-                {{ isLogin ? 'Need an account? Register' : 'Already have an account? Login' }}
-              </p>
+              <ion-item lines="none">
+                <ion-button
+                  class="ion-margin-top custom-ion-button"
+                  size="small"
+                  @click="isLogin ? loginUser() : registerUser()"
+                >
+                  {{ isLogin ? 'Login' : 'Register' }}
+                </ion-button>
+              </ion-item>
+              <ion-item lines="none">
+                <div @click="isLogin = !isLogin">
+                  {{ isLogin ? 'Need an account? Register' : 'Already have an account? Login' }}
+                </div>
+              </ion-item>
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -41,22 +41,11 @@
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
-import {
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonItem,
-  IonGrid,
-  IonRow,
-  IonInput,
-  IonButton,
-  IonCol,
-} from '@ionic/vue';
-import { UserType } from '@/models/User';
+import { IonPage, IonHeader, IonContent, IonItem, IonGrid, IonRow, IonInput, IonButton, IonCol } from '@ionic/vue';
+import User, { UserType } from '@/models/User';
 import { useRouter } from 'vue-router';
 import useUserStore from '@/stores/user';
+import ToolbarNav from '@/components/ToolbarNav.vue';
 
 const isLogin = ref(true);
 
@@ -69,25 +58,24 @@ const userData = reactive({
 
 const router = useRouter();
 const store = useUserStore();
+
+const createUserFromData = (): User => ({
+  user: {
+    username: userData.username || '',
+    email: userData.email || '',
+    password: userData.password || '',
+  } as UserType,
+  jwt: userData.jwt || '',
+});
+
 const loginUser = async () => {
-  const user: UserType = {
-    username: (userData?.username as string) || '',
-    email: (userData?.email as string) || '',
-    password: (userData?.password as string) || '',
-  };
-  await store.login({ user, jwt: userData.jwt });
-  await router.push('/project');
+  await store.login(createUserFromData());
+  await router.push({ path: '/project/list' });
 };
 
 const registerUser = async () => {
-  const user: UserType = {
-    username: (userData?.username as string) || '',
-    email: (userData?.email as string) || '',
-    password: (userData?.password as string) || '',
-  };
-  await store.register({ user, jwt: userData.jwt });
-  isLogin.value = false;
-  await router.push('/login-register');
+  await store.register(createUserFromData());
+  isLogin.value = true;
 };
 </script>
 
@@ -96,5 +84,8 @@ const registerUser = async () => {
   width: 100%;
   max-width: 500px;
   margin: 0 auto;
+}
+.custom-ion-button {
+  width: 100%;
 }
 </style>

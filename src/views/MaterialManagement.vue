@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <ion-header>
-      <toolbar-nav title="Material Management" />
+      <toolbar-nav title="Material Management" show-back show-logout />
     </ion-header>
 
     <ion-content fullscreen class="ion-padding">
