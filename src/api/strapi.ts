@@ -43,7 +43,7 @@ const executeRequest = async (endpoint: string, method: 'GET' | 'POST' | 'PUT', 
 
 export const strapiAddProject = (project: FormData) => executeRequest('/projects', 'POST', project, true);
 export const strapiGetProjects = (filter?: string) =>
-  executeRequest(filter ? `/projects?${filter}&populate=*` : '/projects?&populate=*', 'GET');
+  executeRequest(filter ? `/projects?${filter}&populate=*` : '/projects?populate=*', 'GET');
 export const strapiUpdateProject = (project: Project) => executeRequest(`/projects/${project.id}`, 'PUT', project);
 
 export const strapiGetComments = async (filter?: string) =>
@@ -51,7 +51,7 @@ export const strapiGetComments = async (filter?: string) =>
 export const strapiAddComment = async (comment: Comment) => executeRequest('/comments', 'POST', comment);
 
 export const strapiGetMilestones = (filter?: string) =>
-  executeRequest(filter ? `/milestones?${filter}&populate=*` : '/milestones?&populate=*', 'GET');
+  executeRequest(filter ? `/milestones?${filter}&populate=*` : '/milestones?populate=*', 'GET');
 export const strapiAddMilestone = (milestone: Milestone) => executeRequest('/milestones', 'POST', milestone);
 export const strapiUpdateMilestone = (milestone: Milestone) =>
   executeRequest(`/milestones/${milestone.id}`, 'PUT', milestone);
